@@ -10,6 +10,7 @@ bottle = "^0.12.18"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
+webtest = "^2.0.34"
 
 [tool.black]
 line-length = 79
