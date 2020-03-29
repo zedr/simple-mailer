@@ -10,12 +10,14 @@ class SMTPServerThread(Thread):
     def __init__(self):
         super().__init__()
         self.host_port = None
+        self._processed_message = False
 
     def run(self):
+        thread = self
 
         class _SMTPServer(SMTPServer):
             def process_message(self, *args, **kwargs):
-                pass
+                thread._processed_message = True
 
         self.smtp = _SMTPServer(('127.0.0.1', 0), None)
         self.host_port = self.smtp.socket.getsockname()
