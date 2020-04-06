@@ -1,10 +1,11 @@
-.PHONY: deps install clean tests serve
+.PHONY: deps install clean lint tests serve
 
 ENV=.env
 PYTHON=python3.7
 PYTHON_VERSION=$(shell ${PYTHON} -V | cut -d " " -f 2 | cut -c1-3)
 SITE_PACKAGES=${ENV}/lib/python${PYTHON_VERSION}/site-packages
 IN_ENV=source ${ENV}/bin/activate;
+SRC_PATH=src/simple_mailer
 
 default: deps
 
@@ -28,6 +29,13 @@ install: default
 
 serve: default
 	@${IN_ENV} python main.py
+
+lint: ${ENV}
+	# Mypy informs only and does not break the build.
+	@${IN_ENV} mypy ${SRC_PATH} || true
+	@${IN_ENV} flake8 ${SRC_PATH}
+	@${IN_ENV} black ${SRC_PATH}
+
 
 tests: ${ENV} ${SITE_PACKAGES}/pytest.py
 	@${IN_ENV} pytest src/simple_mailer/tests

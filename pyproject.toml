@@ -7,10 +7,14 @@ authors = ["Rigel <zedr@zedr.com>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 bottle = "^0.12.18"
+lxml = "^4.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
 webtest = "^2.0.34"
+flake8 = "^3.7.9"
+mypy = "^0.770"
+black = "^19.10b0"
 
 [tool.black]
 line-length = 79

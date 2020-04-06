@@ -1,15 +1,13 @@
 from simple_mailer.mailer import Mailer
-from simple_mailer.tests.fixtures import smtpd
 
 
 def test_mailer_can_send_message(smtpd):
     mailer = Mailer(port=smtpd.port, use_tls=False)
     mailer.connect()
     mailer.send_message(
-        from_='me@example.com', 
-        to='you@example.com',
-        subject='test',
-        body='Hello!'
+        from_="me@example.com",
+        to="you@example.com",
+        subject="test",
+        body="Hello!",
     )
     mailer.disconnect()
-    
