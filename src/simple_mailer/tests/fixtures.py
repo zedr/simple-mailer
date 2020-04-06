@@ -1,4 +1,4 @@
-from smtpd import SMTPServer
+from smtpd import SMTPServer, SMTPChannel
 from threading import Lock, Thread
 import asyncore
 import time
@@ -6,20 +6,25 @@ import time
 import pytest
 
 
+class CustomSMTPChannel(SMTPChannel):
+    def smtp_AUTH(self, arg):
+        self.push('235 2.7.0 Authentication successful')
+
+
 class SMTPServerThread(Thread):
     def __init__(self):
         super().__init__()
         self.host_port = None
-        self._processed_message = False
 
     def run(self):
-        thread = self
 
         class _SMTPServer(SMTPServer):
+            channel_class = CustomSMTPChannel
             def process_message(self, *args, **kwargs):
-                thread._processed_message = True
+                assert True
+                pass
 
-        self.smtp = _SMTPServer(('127.0.0.1', 0), None)
+        self.smtp = _SMTPServer(('localhost', 0), None)
         self.host_port = self.smtp.socket.getsockname()
         asyncore.loop(timeout=0.1)
 

@@ -25,6 +25,8 @@ class Mailer:
     def login(self, userid, passwd):
         if self._conn is None:
             raise NotConnectedError('Not connected. Please connect first.')
+        else:
+            self._conn.login(userid, passwd)
 
     def send_message(self, from_='', to='', subject='', body=''):
         msg = EmailMessage()
@@ -33,3 +35,6 @@ class Mailer:
         msg['To'] = to
         msg.set_content(body)
         self._conn.send_message(msg)
+
+    def disconnect(self):
+        self._conn.close()

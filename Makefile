@@ -29,7 +29,7 @@ install: default
 serve: default
 	@${IN_ENV} python main.py
 
-tests: ${SITE_PACKAGES}/pytest.py
+tests: ${ENV} ${SITE_PACKAGES}/pytest.py
 	@${IN_ENV} pytest src/simple_mailer/tests
 
 clean:
