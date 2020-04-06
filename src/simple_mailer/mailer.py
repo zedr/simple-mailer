@@ -18,7 +18,7 @@ class Mailer:
         use_tls: securely connect using TLS
     """
 
-    host: str
+    host: str = 'localhost'
     port: int = 465
     use_tls: bool = True
     _conn: smtplib.SMTP = Optional[None]
