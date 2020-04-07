@@ -1,54 +1,22 @@
-import os
+from urllib.parse import parse_qs
 
 import bottle
 
-from simple_mailer.mailer import Mailer
-
-
-class Config:
-    def __init__(self):
-        self.SMTP_HOST: str = os.environ.get('SMTP_HOST', 'localhost')
-        self._SMTP_PORT: str = os.environ.get('SMTP_PORT', '465')
-        self.SMTP_PASSWD: str = os.environ.get('SMTP_PASSWD', '')
-        self.SMTP_USERID: str = os.environ.get('SMTP_USERID', '')
-        self.MAIL_TO: str = os.environ.get('TO_ADDRESS', '')
-        self.MAIL_FROM: str = os.environ.get('FROM_ADDRESS', '')
-        self.MAIL_SUBJECT: str = os.environ.get('MAIL_SUBJECT', '')
-        self._USE_TLS: str = os.environ.get('USE_TLS', 'true')
-        self.MAILER_PATH = os.environ.get('MAILER_PATH', '/mail')
-
-    @property
-    def SMTP_PORT(self) -> int:
-        try:
-            return int(self._SMTP_PORT)
-        except ValueError:
-            raise ValueError("Invalid port number.")
-
-    @property
-    def USE_TLS(self) -> bool:
-        return True if self._USE_TLS.lower() == "true" else False
+from simple_mailer.config import Config
+from simple_mailer.dispatcher import Dispatcher
 
 
 @bottle.post(Config().MAILER_PATH)
 def mail():
-    try:
-        config = Config()
-    except ValueError:
-        bottle.response.status_code = 500
-        return "Server configuration error: {err.message}"
+    body = bottle.request.body.read().decode("utf8")
+    content_type = bottle.request.environ["CONTENT_TYPE"]
+    if content_type == "application/x-www-form-urlencoded":
+        data = parse_qs(body)
+    else:
+        return bottle.Response(status=406, body="Not acceptable")
 
-    server = Mailer(
-        host=config.SMTP_HOST, port=config.SMTP_PORT, use_tls=config.USE_TLS
-    )
-    server.connect()
-    server.send_message(
-        from_=config.MAIL_FROM,
-        to=config.MAIL_TO,
-        subject=config.MAIL_SUBJECT,
-        body="test",
-    )
-    server.disconnect()
-    return f"Hello world! {config.MAIL_TO}"
+    Dispatcher.dispatch(data)
+    return "OK"
 
 
 def get_application():
