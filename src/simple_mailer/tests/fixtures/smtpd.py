@@ -1,5 +1,6 @@
 import time
 import asyncore
+from typing import List, Optional
 from threading import Thread
 from smtpd import SMTPChannel, SMTPServer
 
@@ -12,15 +13,29 @@ class CustomSMTPChannel(SMTPChannel):
 class SMTPServerThread(Thread):
     def __init__(self):
         super().__init__()
-        self.host_port = None
+        self.host_port: Optional[int] = None
+        self.sent_mail: list = []
 
     def run(self):
+        server_thread = self
+
         class _SMTPServer(SMTPServer):
             channel_class = CustomSMTPChannel
 
-            def process_message(self, *args, **kwargs):
-                assert True
-                pass
+            def process_message(self,
+                                _: tuple,
+                                sender: str,
+                                recipients: List[str],
+                                msg: bytes,
+                                *args,
+                                **kwargs):
+                server_thread.sent_mail.append(
+                    {
+                        'from': sender,
+                        'to': recipients,
+                        'body': msg
+                    }
+                )
 
         self.smtp = _SMTPServer(("localhost", 0), None)
         self.host_port = self.smtp.socket.getsockname()
@@ -55,3 +70,7 @@ class SMTPServerFixture:
         self._thread.join(10)
         if self._thread.is_alive():
             raise RuntimeError("smtp server thread did not stop in 10 sec")
+
+    @property
+    def sent_mail(self) -> list:
+        return self._thread.sent_mail
