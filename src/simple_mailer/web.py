@@ -7,7 +7,8 @@ from simple_mailer.dispatcher import Dispatcher
 
 
 @bottle.post(Config().MAILER_PATH)
-def mail():
+def mail() -> bottle.Response:
+    """A resource that can send mail"""
     body = bottle.request.body.read().decode("utf8")
     content_type = bottle.request.environ["CONTENT_TYPE"]
     if content_type == "application/x-www-form-urlencoded":
@@ -16,8 +17,9 @@ def mail():
         return bottle.Response(status=406, body="Not acceptable")
 
     Dispatcher.dispatch(data)
-    return "OK"
+    return bottle.Response(status=200, body="OK")
 
 
-def get_application():
+def get_application() -> bottle.AppStack:
+    """Get the default Bottle application"""
     return bottle.default_app()
