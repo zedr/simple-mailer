@@ -22,19 +22,17 @@ class SMTPServerThread(Thread):
         class _SMTPServer(SMTPServer):
             channel_class = CustomSMTPChannel
 
-            def process_message(self,
-                                _: tuple,
-                                sender: str,
-                                recipients: List[str],
-                                msg: bytes,
-                                *args,
-                                **kwargs):
+            def process_message(
+                self,
+                _: tuple,
+                sender: str,
+                recipients: List[str],
+                msg: bytes,
+                *args,
+                **kwargs,
+            ):
                 server_thread.sent_mail.append(
-                    {
-                        'from': sender,
-                        'to': recipients,
-                        'body': msg
-                    }
+                    {"from": sender, "to": recipients, "body": msg}
                 )
 
         self.smtp = _SMTPServer(("localhost", 0), None)

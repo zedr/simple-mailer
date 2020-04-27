@@ -1,25 +1,26 @@
+import json
 from urllib.parse import parse_qs
 
-import bottle
-
+from bottle import request, response, default_app, AppStack, post
 from simple_mailer.config import Config
 from simple_mailer.dispatcher import Dispatcher
 
 
-@bottle.post(Config().MAILER_PATH)
-def mail() -> bottle.Response:
+@post(Config().MAILER_PATH)
+def mail() -> str:
     """A resource that can send mail"""
-    body = bottle.request.body.read().decode("utf8")
-    content_type = bottle.request.environ["CONTENT_TYPE"]
+    body = request.body.read().decode("utf8")
+    content_type = request.environ["CONTENT_TYPE"]
     if content_type == "application/x-www-form-urlencoded":
         data = parse_qs(body)
     else:
-        return bottle.Response(status=406, body="Not acceptable")
+        data = json.loads(body)
 
+    response.status = 200
     Dispatcher.dispatch(data)
-    return bottle.Response(status=200, body="OK")
+    return "OK"
 
 
-def get_application() -> bottle.AppStack:
+def get_application() -> AppStack:
     """Get the default Bottle application"""
-    return bottle.default_app()
+    return default_app()
