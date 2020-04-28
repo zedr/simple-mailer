@@ -1,11 +1,11 @@
 from simple_mailer.dispatcher import Dispatcher
 
 
-def test_dispatcher_reads_urlencoded_data(smtpd, urlencoded_post_request):
-    dispatcher = Dispatcher()
-    dispatcher.dispatch({"email": "me@example.com"})
+def test_dispatcher_sends_email(smtpd, urlencoded_post_request):
+    Dispatcher({"email": "me@example.com"}).dispatch()
     assert smtpd.sent_mail
 
 
-def test_dispatcher_reads_json_data():
-    pass
+def test_dispatcher_sends_text_templated_email(smtpd, urlencoded_post_request):
+    Dispatcher({"email": "me@example.com"}).dispatch()
+    assert smtpd.sent_mail

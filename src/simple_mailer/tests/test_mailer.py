@@ -11,3 +11,4 @@ def test_mailer_can_send_message(smtpd):
         body="Hello!",
     )
     mailer.disconnect()
+    assert smtpd.sent_mail

@@ -8,6 +8,7 @@ authors = ["Rigel <zedr@zedr.com>"]
 python = "^3.7"
 bottle = "^0.12.18"
 lxml = "^4.5.0"
+jinja2 = "^2.11.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
