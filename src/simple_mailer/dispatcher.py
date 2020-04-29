@@ -26,7 +26,9 @@ class Dispatcher:
     def parse_request(self, request: bottle.Request) -> 'Dispatcher':
         '''Extract and store the payload of a given HTTP request'''
         body = request.body.read().decode('utf8')
-        content_type = request.environ['CONTENT_TYPE']
+        env = request.environ
+        content_type = env['CONTENT_TYPE']
+        client_ip = env.get('HTTP_X_FORWARDED_FOR', env.get('REMOTE_ADDR', ''))
         if content_type == 'application/x-www-form-urlencoded':
             self.data = parse_qs(body)
         elif content_type == 'application/json':
@@ -37,7 +39,8 @@ class Dispatcher:
             )
         self.metadata = {
             'mailer_url': request.url,
-            'origin': request.remote_addr,
+            'origin': request.remote_addr or '',
+            'client_ip': client_ip
         }
         return self
 
