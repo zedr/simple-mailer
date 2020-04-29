@@ -13,6 +13,7 @@ from simple_mailer.mailer import Mailer
 class Dispatcher:
     """A controller that processes incoming HTTP requests and sends mail"""
     data: Optional[dict] = None
+    template_path: str = Config().MAIL_TEMPLATE_PATH
 
     def parse_request(self, request: bottle.Request) -> 'Dispatcher':
         """Extract and store the payload of a given HTTP request"""
@@ -23,6 +24,9 @@ class Dispatcher:
         else:
             self.data = json.loads(body)
         return self
+
+    def get_templated_body(self):
+        """Assemble and return the body of the message using the template"""
 
     def dispatch(self) -> None:
         """Dispatch a given HTTP request

@@ -64,6 +64,7 @@ class SMTPServerFixture:
         return self.host_port[1]
 
     def close(self):
+        self._thread.sent_mail.clear()
         self._thread.close()
         self._thread.join(10)
         if self._thread.is_alive():

@@ -19,6 +19,11 @@ def smtpd(request):
     return fixture
 
 
+@pytest.fixture(autouse=True)
+def reset(smtpd):
+    smtpd.sent_mail.clear()
+
+
 @pytest.fixture(scope="module")
 def urlencoded_post_request():
     config = Config()

@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 
+# TODO: lazy load using a metaclass?
 class Config:
     def __init__(self):
         self.SMTP_HOST: str = os.environ.get('SMTP_HOST', 'localhost')
