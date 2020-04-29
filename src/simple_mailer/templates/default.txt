@@ -1,2 +1,5 @@
 Form submission
 ===============
+{% for key, value in data.items() %}
+{{ key|e }}: {{ value|e }}
+{% endfor %}

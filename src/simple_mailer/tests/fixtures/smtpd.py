@@ -1,8 +1,9 @@
-import time
 import asyncore
-from typing import List, Optional
-from threading import Thread
+import time
 from smtpd import SMTPChannel, SMTPServer
+from threading import Thread
+from types import SimpleNamespace
+from typing import List, Optional
 
 
 class CustomSMTPChannel(SMTPChannel):
@@ -23,16 +24,18 @@ class SMTPServerThread(Thread):
             channel_class = CustomSMTPChannel
 
             def process_message(
-                self,
-                _: tuple,
-                sender: str,
-                recipients: List[str],
-                msg: bytes,
-                *args,
-                **kwargs,
+                    self,
+                    _: tuple,
+                    sender: str,
+                    recipients: List[str],
+                    msg: bytes,
+                    *args,
+                    **kwargs,
             ):
                 server_thread.sent_mail.append(
-                    {"from": sender, "to": recipients, "body": msg}
+                    SimpleNamespace(
+                        **{"from": sender, "to": recipients, "body": msg}
+                    )
                 )
 
         self.smtp = _SMTPServer(("localhost", 0), None)
