@@ -1,14 +1,13 @@
+import datetime
 import json
 from dataclasses import dataclass
 from typing import Optional
 from urllib.parse import parse_qs
 
 import bottle
-
-from jinja2 import Template
-
+from jinja2 import Template, UndefinedError, TemplateError
 from simple_mailer.config import Config
-from simple_mailer.exceptions import ConfigError
+from simple_mailer.exceptions import ConfigError, ContentTypeUnsupported
 from simple_mailer.mailer import Mailer
 
 
@@ -16,9 +15,13 @@ from simple_mailer.mailer import Mailer
 class Dispatcher:
     '''A controller that processes incoming HTTP requests and sends mail'''
     data: Optional[dict] = None
+    metadata: Optional[dict] = None
 
     def __post_init__(self):
         self._config = Config()
+        for attr in ('data', 'metadata'):
+            if getattr(self, attr) is None:
+                setattr(self, attr, {})
 
     def parse_request(self, request: bottle.Request) -> 'Dispatcher':
         '''Extract and store the payload of a given HTTP request'''
@@ -26,8 +29,16 @@ class Dispatcher:
         content_type = request.environ['CONTENT_TYPE']
         if content_type == 'application/x-www-form-urlencoded':
             self.data = parse_qs(body)
-        else:
+        elif content_type == 'application/json':
             self.data = json.loads(body)
+        else:
+            raise ContentTypeUnsupported(
+                f'Cannot process content type: {content_type}'
+            )
+        self.metadata = {
+            'mailer_url': request.url,
+            'origin': request.remote_addr,
+        }
         return self
 
     @property
@@ -41,7 +52,14 @@ class Dispatcher:
             try:
                 with open(tmpl_path) as fd:
                     tmpl = Template(fd.read())
-                    return tmpl.render(data=self.data)
+                    try:
+                        return tmpl.render(data=self.data,
+                                           metadata=self.metadata)
+                    except UndefinedError as exc:
+                        TemplateError(
+                            f'The template did not define the required fields:'
+                            f' {exc.message}'
+                        )
             except IOError:
                 raise ConfigError(
                     f'Cannot open template file. '
@@ -49,7 +67,6 @@ class Dispatcher:
                 )
         else:
             return json.dumps(self.data)
-
 
     def dispatch(self) -> None:
         '''Dispatch a given HTTP request
@@ -61,6 +78,11 @@ class Dispatcher:
         except ValueError:
             bottle.response.status_code = 500
             raise ConfigError('Mailer server application configuration error')
+
+
+        self.metadata.update(
+            timestamp_utc=datetime.datetime.utcnow().isoformat()
+        )
 
         server = Mailer(
             host=config.SMTP_HOST,

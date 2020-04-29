@@ -1,5 +1,11 @@
 Form submission
 ===============
-{% for key, value in data.items() %}
+{% for key, value in data.items() | sort %}
+{{ key|e }}: {{ value|e }}
+{% endfor %}
+
+Metadata
+========
+{% for key, value in metadata.items() | sort %}
 {{ key|e }}: {{ value|e }}
 {% endfor %}

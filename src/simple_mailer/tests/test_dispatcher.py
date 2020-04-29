@@ -12,3 +12,4 @@ def test_dispatcher_sends_text_templated_email(smtpd, urlencoded_post_request):
     body = smtpd.sent_mail[0].body.decode('utf8')
     assert 'Form submission' in body
     assert 'msg: hello!' in body
+    assert 'timestamp_utc' in body

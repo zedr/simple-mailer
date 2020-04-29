@@ -19,3 +19,5 @@ def test_post_json_mail_app(smtpd: SMTPServerFixture):
     )
     assert response.status_code == 200
     assert smtpd.sent_mail
+    body = smtpd.sent_mail[0].body.decode('utf8')
+    assert 'timestamp_utc' in body
