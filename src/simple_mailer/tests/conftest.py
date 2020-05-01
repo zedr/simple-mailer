@@ -1,6 +1,7 @@
 import io
 import json
 import os
+from types import SimpleNamespace
 
 import bottle
 import pytest
@@ -61,17 +62,46 @@ def json_post_request():
     return fixture
 
 
-@pytest.fixture(scope='session')
-def captcha_server():
+@pytest.fixture
+def captcha_server(request):
     os.environ.setdefault('CAPTCHA', 'recaptchav3')
     recaptcha_site_key = 'fIGZeiSgiRJDMMexWJmwAsMHAuWjwbcUwKvsgOAj'
     os.environ.setdefault('RECAPTCHAV3_SITE_KEY', recaptcha_site_key)
+
+    def fin():
+        os.environ.pop('CAPTCHA', None)
+        os.environ.pop('RECAPTCHAV3_SITE_KEY', None)
+
+    request.addfinalizer(fin)
     return {
         'key': recaptcha_site_key
     }
 
 
-@pytest.fixture(autouse=True)
-def reset_captcha_config(captcha_server):
-    os.environ.pop('CAPTCHA', None)
-    os.environ.pop('RECAPTCHAV3_SITE_KEY', None)
+@pytest.fixture
+def mocked_https_client(request):
+    import http.client
+    class MockedHTTPResponse:
+        status = 200
+
+        def read(self):
+            return json.dumps({'success': True})
+
+    class MockedHTTPSConnection:
+        def __init__(self, host):
+            self.host = host
+
+        def request(self, method, path, params, headers):
+            pass
+
+        def getresponse(self):
+            return MockedHTTPResponse()
+
+    _HTTPSConnection = http.client.HTTPSConnection
+    http.client.HTTPSConnection = MockedHTTPSConnection
+
+    def fin():
+        http.client.HTTPSConnection = _HTTPSConnection
+
+    request.addfinalizer(fin)
+    return None

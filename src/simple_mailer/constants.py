@@ -14,3 +14,8 @@ class CaptchaTypes(Enum):
 class CaptchaResponseKeys:
     """The key names of the Captcha responses"""
     RECAPTCHA_V3 = 'g-recaptcha-response'
+
+
+class CaptchaVerifyLocations:
+    """The URL of the captcha verification endpoints"""
+    RECAPTCHA_V3 = ('www.google.com', '/recaptcha/api/siteverify')

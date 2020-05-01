@@ -3,6 +3,13 @@ from pathlib import Path
 
 
 # TODO: lazy load using a metaclass?
+from typing import Tuple
+from urllib.parse import urlparse
+
+from simple_mailer import constants
+from simple_mailer.exceptions import ConfigError
+
+
 class Config:
     def __init__(self):
         self.SMTP_HOST: str = os.environ.get('SMTP_HOST', 'localhost')
@@ -19,6 +26,8 @@ class Config:
             (Path(__file__).parent / 'templates' / 'default.txt').resolve()
         )
         self.CAPTCHA: str = os.environ.get('CAPTCHA', '')
+        self.CAPTCHA_SECRET: str = os.environ.get('CAPTCHA_SECRET', '')
+        self.CAPTCHA_VERIFY_URL: str = os.environ.get('CAPTCHA_VERIFY_URL', '')
 
     @property
     def SMTP_PORT(self) -> int:
@@ -30,3 +39,19 @@ class Config:
     @property
     def USE_TLS(self) -> bool:
         return True if self._USE_TLS.lower() == 'true' else False
+
+    @property
+    def CAPTCHA_VERIFY_LOCATION(self) -> Tuple[str, str]:
+        """The location of the captcha verification site"""
+        overridden_url = self.CAPTCHA_VERIFY_URL
+        if overridden_url:
+            parsed = urlparse(overridden_url)
+            return (parsed.hostname, parsed.path)
+        else:
+            if self.CAPTCHA == constants.CaptchaTypes.RECAPTCHA_V3.value:
+                return constants.CaptchaVerifyLocations.RECAPTCHA_V3
+            else:
+                raise ConfigError(
+                    f'Captcha type not supported: {self.CAPTCHA}'
+                )
+

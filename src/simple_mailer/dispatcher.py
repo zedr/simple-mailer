@@ -89,7 +89,7 @@ class Dispatcher:
                 raise exceptions.InvalidCaptchaResponse(
                     f'The POST request did not contain the correct response. '
                     f'The POST data should include the response using a key '
-                    f'named "{captcha_key}"'
+                    f'named "{captcha_key}" and a value for it.'
                 )
             else:
                 if resp:
