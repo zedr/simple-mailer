@@ -20,7 +20,7 @@ def smtpd(request):
 
 
 @pytest.fixture(autouse=True)
-def reset(smtpd):
+def reset_smtpd_storage(smtpd):
     smtpd.sent_mail.clear()
 
 
@@ -59,3 +59,19 @@ def json_post_request():
         }
     )
     return fixture
+
+
+@pytest.fixture(scope='session')
+def captcha_server():
+    os.environ.setdefault('CAPTCHA', 'recaptchav3')
+    recaptcha_site_key = 'fIGZeiSgiRJDMMexWJmwAsMHAuWjwbcUwKvsgOAj'
+    os.environ.setdefault('RECAPTCHAV3_SITE_KEY', recaptcha_site_key)
+    return {
+        'key': recaptcha_site_key
+    }
+
+
+@pytest.fixture(autouse=True)
+def reset_captcha_config(captcha_server):
+    os.environ.pop('CAPTCHA', None)
+    os.environ.pop('RECAPTCHAV3_SITE_KEY', None)

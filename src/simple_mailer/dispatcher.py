@@ -6,8 +6,10 @@ from urllib.parse import parse_qs
 
 import bottle
 from jinja2 import Template, UndefinedError, TemplateError
+from simple_mailer import constants
+from simple_mailer import exceptions
+from simple_mailer.captcha import is_valid_recaptcha_v3_response
 from simple_mailer.config import Config
-from simple_mailer.exceptions import ConfigError, ContentTypeUnsupported
 from simple_mailer.mailer import Mailer
 
 
@@ -34,7 +36,7 @@ class Dispatcher:
         elif content_type == 'application/json':
             self.data = json.loads(body)
         else:
-            raise ContentTypeUnsupported(
+            raise exceptions.ContentTypeUnsupported(
                 f'Cannot process content type: {content_type}'
             )
         self.metadata = {
@@ -64,12 +66,50 @@ class Dispatcher:
                             f' {exc.message}'
                         )
             except IOError:
-                raise ConfigError(
+                raise exceptions.ConfigError(
                     f'Cannot open template file. '
                     f'Check if it exists and is readable.'
                 )
         else:
             return json.dumps(self.data)
+
+    def check_captcha(self) -> None:
+        """Verify that the captcha challenge was responded correctly
+
+        If the captchas are not configured (using environment variables) this
+        is a no-op."""
+        captcha = Config().CAPTCHA
+        if not captcha:
+            pass
+        elif captcha == 'recaptchav3':
+            captcha_key = constants.CaptchaResponseKeys.RECAPTCHA_V3
+            try:
+                resp = self.data[captcha_key]
+            except KeyError:
+                raise exceptions.InvalidCaptchaResponse(
+                    f'The POST request did not contain the correct response. '
+                    f'The POST data should include the response using a key '
+                    f'named "{captcha_key}"'
+                )
+            else:
+                if resp:
+                    if is_valid_recaptcha_v3_response(resp):
+                        pass
+                    else:
+                        raise exceptions.FailedCaptchaResponse(
+                            f'The captcha response verification has failed. '
+                            f'The challenge response provided in the POST '
+                            f'data was: {resp}'
+                        )
+                else:
+                    raise exceptions.InvalidCaptchaResponse(
+                        f'Missing value for POST data key {captcha_key}'
+                    )
+        else:
+            raise exceptions.ConfigError(
+                f'Unsupported captcha type: "{captcha}". '
+                f'Supported types are: {constants.CaptchaTypes.values_as_str}'
+            )
 
     def dispatch(self) -> None:
         '''Dispatch a given HTTP request
@@ -80,8 +120,11 @@ class Dispatcher:
             config = Config()
         except ValueError:
             bottle.response.status_code = 500
-            raise ConfigError('Mailer server application configuration error')
+            raise exceptions.ConfigError(
+                'Mailer server application configuration error'
+            )
 
+        self.check_captcha()
 
         self.metadata.update(
             timestamp_utc=datetime.datetime.utcnow().isoformat()

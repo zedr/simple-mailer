@@ -18,6 +18,7 @@ class Config:
             'MAIL_TEMPLATE_PATH',
             (Path(__file__).parent / 'templates' / 'default.txt').resolve()
         )
+        self.CAPTCHA: str = os.environ.get('CAPTCHA', '')
 
     @property
     def SMTP_PORT(self) -> int:

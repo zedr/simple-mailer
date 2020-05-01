@@ -8,3 +8,11 @@ class ConfigError(BaseSimpleMailerException):
 
 class ContentTypeUnsupported(BaseSimpleMailerException):
     """The submitted data is formatted using an unsupported content type"""
+
+
+class InvalidCaptchaResponse(BaseSimpleMailerException):
+    """The captcha response key/value pair is invalid or missing"""
+
+
+class FailedCaptchaResponse(BaseSimpleMailerException):
+    """The captcha response verification with the server has failed"""
