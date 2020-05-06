@@ -24,13 +24,13 @@ class SMTPServerThread(Thread):
             channel_class = CustomSMTPChannel
 
             def process_message(
-                    self,
-                    _: tuple,
-                    sender: str,
-                    recipients: List[str],
-                    msg: bytes,
-                    *args,
-                    **kwargs,
+                self,
+                _: tuple,
+                sender: str,
+                recipients: List[str],
+                msg: bytes,
+                *args,
+                **kwargs,
             ):
                 server_thread.sent_mail.append(
                     SimpleNamespace(

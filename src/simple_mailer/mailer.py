@@ -32,8 +32,8 @@ class Mailer:
                 self._conn = smtplib.SMTP(host=self.host, port=self.port)
             except ConnectionRefusedError as exc:
                 raise exceptions.MailServerError(
-                    f'Could not connect to SMTP server '
-                    f'at {self.host}:{self.port}: {exc.strerror}'
+                    f"Could not connect to SMTP server "
+                    f"at {self.host}:{self.port}: {exc.strerror}"
                 )
             else:
                 if self.use_tls:

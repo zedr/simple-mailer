@@ -27,7 +27,7 @@ def reset_smtpd_storage(smtpd):
 @pytest.fixture(scope="module")
 def urlencoded_post_request():
     config = Config()
-    body_obj = io.BytesIO(b'email=me%40example.com&subscribe_me=True')
+    body_obj = io.BytesIO(b"email=me%40example.com&subscribe_me=True")
     fixture = bottle.Request(
         environ={
             "REQUEST_METHOD": "POST",
@@ -43,12 +43,9 @@ def urlencoded_post_request():
 @pytest.fixture(scope="module")
 def json_post_request():
     config = Config()
-    body_obj = io.BytesIO(json.dumps(
-        {
-            'email': 'me@example.org',
-            'message': 'hello!'
-        }
-    ))
+    body_obj = io.BytesIO(
+        json.dumps({"email": "me@example.org", "message": "hello!"})
+    )
     fixture = bottle.Request(
         environ={
             "REQUEST_METHOD": "POST",
@@ -63,28 +60,27 @@ def json_post_request():
 
 @pytest.fixture
 def captcha_server(request):
-    os.environ.setdefault('CAPTCHA', 'recaptchav3')
-    recaptcha_site_key = 'fIGZeiSgiRJDMMexWJmwAsMHAuWjwbcUwKvsgOAj'
-    os.environ.setdefault('RECAPTCHAV3_SITE_KEY', recaptcha_site_key)
+    os.environ.setdefault("CAPTCHA", "recaptchav3")
+    recaptcha_site_key = "fIGZeiSgiRJDMMexWJmwAsMHAuWjwbcUwKvsgOAj"
+    os.environ.setdefault("RECAPTCHAV3_SITE_KEY", recaptcha_site_key)
 
     def fin():
-        os.environ.pop('CAPTCHA', None)
-        os.environ.pop('RECAPTCHAV3_SITE_KEY', None)
+        os.environ.pop("CAPTCHA", None)
+        os.environ.pop("RECAPTCHAV3_SITE_KEY", None)
 
     request.addfinalizer(fin)
-    return {
-        'key': recaptcha_site_key
-    }
+    return {"key": recaptcha_site_key}
 
 
 @pytest.fixture
 def mocked_https_client(request):
     import http.client
+
     class MockedHTTPResponse:
         status = 200
 
         def read(self):
-            return json.dumps({'success': True})
+            return json.dumps({"success": True})
 
     class MockedHTTPSConnection:
         def __init__(self, host):

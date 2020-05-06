@@ -24,15 +24,11 @@ def mail() -> str:
         response.status = 200
         return "OK"
 
-@get('/')
+
+@get("/")
 def root() -> str:
     """The root resource"""
-    return json.dumps(
-        {
-            'mailer': Config().MAILER_PATH
-        }
-    )
-
+    return json.dumps({"mailer": Config().MAILER_PATH})
 
 
 def get_application() -> AppStack:
@@ -41,4 +37,4 @@ def get_application() -> AppStack:
 
 
 def run_application():
-    run(host='localhost', port=8080)
+    run(host="localhost", port=8080)
