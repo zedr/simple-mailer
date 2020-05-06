@@ -16,3 +16,11 @@ class InvalidCaptchaResponse(BaseSimpleMailerException):
 
 class FailedCaptchaResponse(BaseSimpleMailerException):
     """The captcha response verification with the server has failed"""
+
+
+class SubmittedDataInvalid(BaseSimpleMailerException):
+    """The submitted data is invalid"""
+
+
+class MailServerError(BaseSimpleMailerException):
+    """Got an error from the remote SMTP server"""

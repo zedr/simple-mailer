@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from email.message import EmailMessage
 from typing import Optional
 
+from simple_mailer import exceptions
+
 
 class NotConnectedError(Exception):
     """Not connected to the intended mail server"""
@@ -26,9 +28,16 @@ class Mailer:
     def connect(self) -> None:
         """Connect to the remote server"""
         if self.host and self.port > 0:
-            self._conn = smtplib.SMTP(host=self.host, port=self.port)
-            if self.use_tls:
-                self._conn.starttls()
+            try:
+                self._conn = smtplib.SMTP(host=self.host, port=self.port)
+            except ConnectionRefusedError as exc:
+                raise exceptions.MailServerError(
+                    f'Could not connect to SMTP server '
+                    f'at {self.host}:{self.port}: {exc.strerror}'
+                )
+            else:
+                if self.use_tls:
+                    self._conn.starttls()
         else:
             raise NotConnectedError(
                 f"Cannot connect to: {self.host}:{self.port}"

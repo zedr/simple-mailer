@@ -34,7 +34,10 @@ class Dispatcher:
         if content_type == 'application/x-www-form-urlencoded':
             data = parse_qs(body)
         elif content_type == 'application/json':
-            data = json.loads(body)
+            try:
+                data = json.loads(body)
+            except json.JSONDecodeError:
+                raise exceptions.SubmittedDataInvalid('Invalid JSON')
         else:
             raise exceptions.ContentTypeUnsupported(
                 f'Cannot process content type: {content_type}'
