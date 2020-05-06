@@ -14,6 +14,9 @@ def mail() -> str:
     except exceptions.ContentTypeUnsupported as exc:
         response.status = 400
         return str(exc)
+    except exceptions.SubmittedDataInvalid as exc:
+        response.status = 400
+        return str(exc)
     except exceptions.BaseSimpleMailerException as exc:
         response.status = 503
         return str(exc)

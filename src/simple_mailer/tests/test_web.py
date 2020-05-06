@@ -1,5 +1,6 @@
 import json
 
+import webtest
 from simple_mailer.config import Config
 from simple_mailer.tests.fixtures.smtpd import SMTPServerFixture
 from simple_mailer.web import get_application
@@ -34,7 +35,9 @@ def test_post_json_mail_app(smtpd: SMTPServerFixture):
     assert 'timestamp_utc' in body
 
 
-def test_post_empty_payload():
+def test_post_empty_payload_is_denied():
     app = TestApp(get_application())
-    response = app.post_json('/mail', {})
-    assert response.status_code == 400
+    try:
+        app.post_json('/mail', {})
+    except webtest.app.AppError as err:
+        assert '400 Bad Request' in err.args[0]

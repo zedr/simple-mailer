@@ -43,10 +43,12 @@ class Dispatcher:
                 f'Cannot process content type: {content_type}'
             )
 
-        ignored_fields = self._config.FIELDS_IGNORED
+        excluded_fields = self._config.FIELDS_EXCLUDED
         self.data = {
-            k: v for k, v in data.items() if k not in ignored_fields
+            k: v for k, v in data.items() if k not in excluded_fields
         }
+        if not self.data:
+            raise exceptions.SubmittedDataInvalid('Need at least one field')
 
         self.metadata = {
             'mailer_url': request.url,

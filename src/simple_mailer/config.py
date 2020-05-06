@@ -28,7 +28,7 @@ class Config:
         self.CAPTCHA: str = os.environ.get('CAPTCHA', '')
         self.CAPTCHA_SECRET: str = os.environ.get('CAPTCHA_SECRET', '')
         self.CAPTCHA_VERIFY_URL: str = os.environ.get('CAPTCHA_VERIFY_URL', '')
-        self._FIELDS_IGNORED = os.environ.get('FIELDS_IGNORED', '')
+        self._FIELDS_EXCLUDED = os.environ.get('FIELDS_EXCLUDED', '')
 
     @property
     def SMTP_PORT(self) -> int:
@@ -57,7 +57,7 @@ class Config:
                 )
 
     @property
-    def FIELDS_IGNORED(self) -> List[str]:
+    def FIELDS_EXCLUDED(self) -> List[str]:
         """A list of fields that should be ignored"""
-        return self._FIELDS_IGNORED.split(',')
+        return self._FIELDS_EXCLUDED.split(',')
 

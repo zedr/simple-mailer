@@ -18,7 +18,7 @@ def test_dispatcher_sends_text_templated_email(smtpd, urlencoded_post_request):
 
 
 def test_dispatcher_filter_unwanted_fields(smtpd, urlencoded_post_request):
-    os.environ.setdefault('FIELDS_IGNORED', 'subscribe_me')
+    os.environ.setdefault('FIELDS_EXCLUDED', 'subscribe_me')
     Dispatcher().parse_request(urlencoded_post_request).dispatch()
     assert len(smtpd.sent_mail) == 1
     body = smtpd.sent_mail[0].body.decode('utf8')
