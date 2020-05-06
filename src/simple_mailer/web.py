@@ -1,8 +1,7 @@
-from bottle import request, response, default_app, AppStack, post
-
+from bottle import request, response, default_app, AppStack, post, run
+from simple_mailer import exceptions
 from simple_mailer.config import Config
 from simple_mailer.dispatcher import Dispatcher
-from simple_mailer import exceptions
 
 
 @post(Config().MAILER_PATH)
@@ -24,3 +23,7 @@ def mail() -> str:
 def get_application() -> AppStack:
     """Get the default Bottle application"""
     return default_app()
+
+
+def run_application():
+    run(host='localhost', port=8080)
