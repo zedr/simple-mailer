@@ -1,3 +1,5 @@
+import os
+
 from simple_mailer.dispatcher import Dispatcher
 
 
@@ -13,3 +15,11 @@ def test_dispatcher_sends_text_templated_email(smtpd, urlencoded_post_request):
     assert 'Form submission' in body
     assert 'msg: hello!' in body
     assert 'timestamp_utc' in body
+
+
+def test_dispatcher_filter_unwanted_fields(smtpd, urlencoded_post_request):
+    os.environ.setdefault('FIELDS_IGNORED', 'subscribe_me')
+    Dispatcher().parse_request(urlencoded_post_request).dispatch()
+    assert len(smtpd.sent_mail) == 1
+    body = smtpd.sent_mail[0].body.decode('utf8')
+    assert 'subscribe_me' not in body

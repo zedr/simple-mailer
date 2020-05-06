@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 # TODO: lazy load using a metaclass?
-from typing import Tuple
+from typing import Tuple, List
 from urllib.parse import urlparse
 
 from simple_mailer import constants
@@ -28,6 +28,7 @@ class Config:
         self.CAPTCHA: str = os.environ.get('CAPTCHA', '')
         self.CAPTCHA_SECRET: str = os.environ.get('CAPTCHA_SECRET', '')
         self.CAPTCHA_VERIFY_URL: str = os.environ.get('CAPTCHA_VERIFY_URL', '')
+        self._FIELDS_IGNORED = os.environ.get('FIELDS_IGNORED', '')
 
     @property
     def SMTP_PORT(self) -> int:
@@ -54,4 +55,9 @@ class Config:
                 raise ConfigError(
                     f'Captcha type not supported: {self.CAPTCHA}'
                 )
+
+    @property
+    def FIELDS_IGNORED(self) -> List[str]:
+        """A list of fields that should be ignored"""
+        return self._FIELDS_IGNORED.split(',')
 

@@ -53,7 +53,7 @@ def json_post_request():
         environ={
             "REQUEST_METHOD": "POST",
             "PATH_INFO": config.MAILER_PATH,
-            "CONTENT_TYPE": "application/x-www-form-urlencoded",
+            "CONTENT_TYPE": "application/json",
             "CONTENT_LENGTH": 40,
             "bottle.request.body": body_obj,
         }

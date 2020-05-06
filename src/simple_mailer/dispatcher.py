@@ -32,13 +32,19 @@ class Dispatcher:
         content_type = env['CONTENT_TYPE']
         client_ip = env.get('HTTP_X_FORWARDED_FOR', env.get('REMOTE_ADDR', ''))
         if content_type == 'application/x-www-form-urlencoded':
-            self.data = parse_qs(body)
+            data = parse_qs(body)
         elif content_type == 'application/json':
-            self.data = json.loads(body)
+            data = json.loads(body)
         else:
             raise exceptions.ContentTypeUnsupported(
                 f'Cannot process content type: {content_type}'
             )
+
+        ignored_fields = self._config.FIELDS_IGNORED
+        self.data = {
+            k: v for k, v in data.items() if k not in ignored_fields
+        }
+
         self.metadata = {
             'mailer_url': request.url,
             'origin': request.remote_addr or '',
@@ -78,7 +84,7 @@ class Dispatcher:
 
         If the captchas are not configured (using environment variables) this
         is a no-op."""
-        captcha = Config().CAPTCHA
+        captcha = self._config.CAPTCHA
         if not captcha:
             pass
         elif captcha == 'recaptchav3':
