@@ -1,7 +1,6 @@
 import io
 import json
 import os
-from types import SimpleNamespace
 
 import bottle
 import pytest
