@@ -10,18 +10,27 @@ def long_description():
         return fd.read()
 
 
-def install_requires():
+def _get_pyproject_cfg():
     parser = configparser.ConfigParser()
     with open('pyproject.toml') as fd:
         parser.read_file(fd)
-        deps = parser['tool.poetry.dependencies']
-        parsed = [f'{k}=={v}' for k, v in deps.items() if k is not 'python']
-        return parsed
+    return parser
+
+
+def version():
+    return _get_pyproject_cfg()['tool.poetry']['version'].strip('"')
+
+
+def install_requires():
+    cfg = _get_pyproject_cfg()
+    deps = cfg['tool.poetry.dependencies']
+    parsed = [f'{k}=={v[1:]}' for k, v in deps.items() if k is not 'python']
+    return parsed
 
 
 setup(
     name='simple-mailer',
-    version='0.9.1',
+    version=version(),
     author='Rigel Di Scala',
     author_email='zedr@zedr.com',
     description='A simple mailer for web forms',
