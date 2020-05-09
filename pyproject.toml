@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "simple-mailer"
-version = "0.9.2"
-description = ""
-authors = ["Rigel <zedr@zedr.com>"]
+version = "0.9.5"
+description = "A simple mailer"
+authors = ["Rigel Di Scala <zedr@zedr.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
