@@ -36,9 +36,11 @@ lint: ${ENV}
 	@${IN_ENV} flake8 ${SRC_PATH}
 	@${IN_ENV} black ${SRC_PATH}
 
-
 tests: ${ENV} ${SITE_PACKAGES}/pytest.py
 	@${IN_ENV} pytest src/simple_mailer/tests
+
+sdist: ${ENV}
+	@${IN_ENV} python setup.py sdist
 
 clean:
 	@rm -rf ${ENV} .env dist .pytest_cache
