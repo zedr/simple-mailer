@@ -1,15 +1,34 @@
 #!/usr/bin/env python
 
+import configparser
+
 from setuptools import setup, find_packages
+
+
+def long_description():
+    with open('README.md') as fd:
+        return fd.read()
+
+
+def install_requires():
+    parser = configparser.ConfigParser()
+    with open('pyproject.toml') as fd:
+        parser.read_file(fd)
+        deps = parser['tool.poetry.dependencies']
+        parsed = [f'{k}=={v}' for k, v in deps.items() if k is not 'python']
+        return parsed
+
 
 setup(
     name='simple-mailer',
-    version='0.9.0',
+    version='0.9.1',
     author='Rigel Di Scala',
     author_email='zedr@zedr.com',
     description='A simple mailer for web forms',
+    long_description=long_description(),
+    long_description_content_type='text/markdown',
     url='https://github.com/zedr/simple-mailer',
-    install_requires=['bottle', 'lxml', 'jinja2'],
+    install_requires=install_requires(),
     package_dir={'': 'src'},
     packages=find_packages(),
     include_package_data=True,

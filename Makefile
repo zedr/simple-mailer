@@ -1,4 +1,4 @@
-.PHONY: deps install clean lint tests serve
+.PHONY: deps install clean lint tests serve sdist wheel
 
 ENV=.env
 PYTHON=python3.7
@@ -41,6 +41,9 @@ tests: ${ENV} ${SITE_PACKAGES}/pytest.py
 
 sdist: ${ENV}
 	@${IN_ENV} python setup.py sdist
+
+wheel: ${ENV}
+	@${IN_ENV} python setup.py bdist_wheel
 
 clean:
 	@rm -rf ${ENV} .env dist .pytest_cache
