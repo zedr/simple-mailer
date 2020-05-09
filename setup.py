@@ -44,6 +44,7 @@ setup(
     author='Rigel Di Scala',
     author_email='zedr@zedr.com',
     description='A simple mailer for web forms',
+    license='MIT',
     long_description=long_description(),
     long_description_content_type='text/markdown',
     url='https://github.com/zedr/simple-mailer',
