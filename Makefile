@@ -45,5 +45,8 @@ sdist: ${ENV}
 wheel: ${ENV}
 	@${IN_ENV} python setup.py bdist_wheel
 
-clean:
+clean_dist:
+	@rm -rf dist
+
+clean: clean_dist
 	@rm -rf ${ENV} .env dist .pytest_cache
