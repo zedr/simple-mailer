@@ -25,22 +25,17 @@ A simple Python mailer script that's suitable for Namecheap Shared Hosting.
 
     3.6. Choose the name of the Passenger log file, e.g. simple-mailer.log
 
-    3.7. Add a new Environment variable, with name `SMTP_HOST` and the host name
-     of your chosen smtp server
+    3.7. Add a new Environment variable, with name `SMTP_HOST` and the host name of your chosen smtp server, e.g. smtp.example.com
+
+    3.8. Add a new Environment variable, with name `SMTP_PORT` and the port number of your smtp server, e.g. 465
+
+    3.9. Add a new Environment variable, with name `FROM_ADDRESS` and the name of your sender email address, e.g. mailer@example.com
     
-    3.8. Add a new Environment variable, with name `SMTP_HOST` and the host name of your chosen smtp server, e.g. mail.smacznykaseksuwalki.com
+    3.10. Add a new Environment variable, with name `TO_ADDRESS` and the name of your recipient email address, e.g. inbox@example.com
 
-    3.9. Add a new Environment variable, with name `SMTP_PORT` and the port number of your smtp server, e.g. 465
+    3.11. Add a new Environment variable, with name `USE_TLS` and set it to `false` if you don't want secure communication to your SMTP server or it doesn't support it (not recommended) 
 
-    3.10. Add a new Environment variable, with name `FROM_ADDRESS` and the name of your sender email address, e.g. mailer@example.com
-    
-    3.11. Add a new Environment variable, with name `TO_ADDRESS` and the name of your recipient email address, e.g. inbox@example.com
-
-    3.12. Add a new Environment variable, with name `USE_TLS` and set it to `false` if you don't want secure communication to your SMTP server or it doesn't support it (not recommended) 
-
-    3.13. Add a new Environment variable, with name `USE_TLS` and set it to `false` if you don't want secure communication to your SMTP server or it doesn't support it (not recommended) 
-
-    3.14. Create the Application 
+    3.12. Create the Application 
 
 4. Connect via SSH to your Unix Shared hosting environment
     
