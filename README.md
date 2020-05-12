@@ -140,11 +140,14 @@ If the root path of this application has been made available at
 
 ### CAPTCHA
 
-The captcha protocol to use.
+The captcha protocol to use. Possible values are: `recaptchav3`
 
 Example: `recaptchav3`
 
 Default: An empty string (no captcha system will be used - not recommended)
+
+Note: the relevant captcha field in the POST, e.g. `g-captcha-response`, will
+be removed from the data that will be sent by email.
 
 ### CAPTCHA_SECRET
 
@@ -165,12 +168,23 @@ Default: An empty string.
 ### FIELDS_EXCLUDED
 
 A list of fields in the POST request to exclude from the email. Fields are
-comma separated.
+comma separated. These fields take precedence over `FIELDS_INCLUDED`, i.e. if
+a field is mentioned here it will be excluded even if it is listed in
+`FIELDS_INCLUDED`.
 
 Example: `secret_field1,secret_field2`
 
 Default: An empty string (no fields are excluded)
 
-TODO: strip border whitespace
+### FIELDS_INCLUDED
 
-TODO: Add `FIELDS_INCLUDED`
+A list of fields in the POST request to include in the email. Fields are
+comma separated. All other fields will be ignored, but only if they are not 
+also mentioned in `FIELDS_EXCLUDED`
+
+Example: `secret_field1,secret_field2`
+
+Default: An empty string (no fields are excluded)
+
+Note: don't forget to add your captcha fields if you set this variable!
+

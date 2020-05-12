@@ -40,11 +40,22 @@ class Dispatcher:
                 f"Cannot process content type: {content_type}"
             )
 
-        excluded_fields = self._config.FIELDS_EXCLUDED
-        self.data = {k: v for k, v in data.items() if k not in excluded_fields}
-        if not self.data:
+        fields_to_include = self._config.FIELDS_INCLUDED
+        if fields_to_include:
+            data = {
+                k: v for k, v in data.items() if k in fields_to_include
+            }
+
+        fields_to_exclude = self._config.FIELDS_EXCLUDED
+        if fields_to_exclude:
+            data = {
+                k: v for k, v in data.items() if k not in fields_to_exclude
+            }
+
+        if not data:
             raise exceptions.SubmittedDataInvalid("Need at least one field")
 
+        self.data = data
         self.metadata = {
             "mailer_url": request.url,
             "origin": request.remote_addr or "",
@@ -92,7 +103,7 @@ class Dispatcher:
         elif captcha == "recaptchav3":
             captcha_key = constants.CaptchaResponseKeys.RECAPTCHA_V3
             try:
-                resp = self.data[captcha_key]
+                resp = self.data.pop(captcha_key)
             except KeyError:
                 raise exceptions.InvalidCaptchaResponse(
                     f"The POST request did not contain the correct response. "
@@ -101,9 +112,7 @@ class Dispatcher:
                 )
             else:
                 if resp:
-                    if is_valid_recaptcha_v3_response(resp):
-                        pass
-                    else:
+                    if not is_valid_recaptcha_v3_response(resp):
                         raise exceptions.FailedCaptchaResponse(
                             f"The captcha response verification has failed. "
                             f"The challenge response provided in the POST "

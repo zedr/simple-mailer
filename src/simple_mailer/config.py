@@ -27,6 +27,7 @@ class Config:
         self.CAPTCHA: str = os.environ.get("CAPTCHA", "")
         self.CAPTCHA_SECRET: str = os.environ.get("CAPTCHA_SECRET", "")
         self.CAPTCHA_VERIFY_URL: str = os.environ.get("CAPTCHA_VERIFY_URL", "")
+        self._FIELDS_INCLUDED = os.environ.get("FIELDS_INCLUDED", "")
         self._FIELDS_EXCLUDED = os.environ.get("FIELDS_EXCLUDED", "")
 
     @property
@@ -57,5 +58,14 @@ class Config:
 
     @property
     def FIELDS_EXCLUDED(self) -> List[str]:
-        """A list of fields that should be ignored"""
-        return self._FIELDS_EXCLUDED.split(",")
+        """A list of fields that should be ignored
+
+        Note: this overrides FIELDS_INCLUDED."""
+        fields = (name.strip() for name in self._FIELDS_EXCLUDED.split(","))
+        return [fld for fld in fields if fld]
+
+    @property
+    def FIELDS_INCLUDED(self) -> List[str]:
+        """A list of fields that should be included"""
+        fields = (name.strip() for name in self._FIELDS_INCLUDED.split(","))
+        return [fld for fld in fields if fld]
