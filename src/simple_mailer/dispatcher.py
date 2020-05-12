@@ -42,9 +42,7 @@ class Dispatcher:
 
         fields_to_include = self._config.FIELDS_INCLUDED
         if fields_to_include:
-            data = {
-                k: v for k, v in data.items() if k in fields_to_include
-            }
+            data = {k: v for k, v in data.items() if k in fields_to_include}
 
         fields_to_exclude = self._config.FIELDS_EXCLUDED
         if fields_to_exclude:
