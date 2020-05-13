@@ -1,9 +1,28 @@
 # Simple Mailer
-A simple Python mailer script that's suitable for Namecheap Shared Hosting.
-
 [![Build Status](https://travis-ci.com/zedr/simple-mailer.svg?branch=master)](https://travis-ci.com/zedr/simple-mailer)
 
+A simple Python mailer program that can be run in the WSGI environment of a
+shared hosting provider.
+
+This program enables a web resource that used by an HTML web form to send mail
+to a specific email address.
+
+### Features:
+ - Can be triggered by a WSGI call or run standalone as a daemon
+ - Configurable using environment variables
+ - Captcha support (Recaptcha v3 for now)
+ - Customizable email template
+ - Easy to setup
+
 ## Installation
+### Shared Hosting
+1. Install the package, e.g. using `pip install simple-mailer`
+2. Copy over the `wsgi/passenger_wsgi.py` to the appropriate folder and rename 
+accordingly
+3. Configure the environment variables, listed below, as needed
+
+More information, including hosting provider specific instructions, can be
+found on the [Wiki](https://github.com/zedr/simple-mailer/wiki).
 
 ## Configuration
 
