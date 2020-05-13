@@ -7,8 +7,8 @@
 A simple Python mailer program that can be run in the WSGI environment of a
 shared hosting provider.
 
-This program enables a web resource that used by an HTML web form to send mail
-to a specific email address.
+This program provides a web resource that can be used by an HTML web form 
+to send mail to a specific email address.
 
 ### Features:
  - Can be triggered by a WSGI call or run standalone as a daemon
@@ -118,7 +118,7 @@ be removed from the data that will be sent by email.
 
 #### CAPTCHA_SECRET
 
-The secret used to validate the request using a given sercret.
+The secret used to validate the request using a given secret.
 
 Example: `d0n0tsh4r3m3`
 
@@ -126,7 +126,8 @@ Default: An empty string.
 
 #### CAPTCHA_VERIFY_URL
 
-The URL where challenge responses regarding the captcha can be verified.
+The URL where challenge responses regarding the captcha can be verified, if
+required.
 
 Example: `https://www.google.com/recaptcha/api/siteverify`
 
