@@ -5,61 +5,6 @@ A simple Python mailer script that's suitable for Namecheap Shared Hosting.
 
 ## Installation
 
-### Namecheap Shared Hosting
-
-1. Go to CPanel
-
-2. Create a new Python application
-
-3. In the "Create Application" wizard:
-
-    3.1. Select Python version 3.7.3 or higher
-
-    3.2. Choose a name for your Application root, e.g. simple-mailer
-
-    3.3. Choose a path name for the Application URL, e.g. simple-mailer
-
-    3.4. Leave the Application startup file field blank
-
-    3.5. Leave the Application Entry point field blank
-
-    3.6. Choose the name of the Passenger log file, e.g. simple-mailer.log
-
-    3.7. Add a new Environment variable, with name `SMTP_HOST` and the host name of your chosen smtp server, e.g. smtp.example.com
-
-    3.8. Add a new Environment variable, with name `SMTP_PORT` and the port number of your smtp server, e.g. 465
-
-    3.9. Add a new Environment variable, with name `FROM_ADDRESS` and the name of your sender email address, e.g. mailer@example.com
-    
-    3.10. Add a new Environment variable, with name `TO_ADDRESS` and the name of your recipient email address, e.g. inbox@example.com
-
-    3.11. Add a new Environment variable, with name `USE_TLS` and set it to `false` if you don't want secure communication to your SMTP server or it doesn't support it (not recommended) 
-
-    3.12. Create the Application 
-
-4. Connect via SSH to your Unix Shared hosting environment
-    
-    4.1 Activate the Virtual environment linked to you application, e.g
-    
-    4.2 `pip install simple-mailer`
-
-    4.3 Edit the `passenger_wsgi.py` file in your application's home, e.g. `~/simple-mailer/passenger_wsgi.py`
-
-    4.4. Replace the contents of the file so that it reads as follows:
-    ```python
-    import os
-    import sys
-
-    from simple_mailer.web import get_application
-
-    sys.path.insert(0, os.path.dirname(__file__))
-
-    application = get_application()
-    ```
-5. Start the application
-
-6. Go to http://www.mydomain.com/simple-mailer and you should get the following response: `{"mailer": "/mail"}`. This indicates that the program has been installed correctly.
-
 ## Configuration
 
 All configuration is done using environment variables.
