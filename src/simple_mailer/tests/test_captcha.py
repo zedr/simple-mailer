@@ -26,12 +26,14 @@ def test_recaptcha_v3(smtpd, captcha_server, mocked_https_client):
             "email": "me@example.com",
             "subscribe_me": True,
             captcha.Recaptchav3Client.key: recaptcha_response,
-        },
+        }
     )
     assert response.status_code == 200
     assert smtpd.sent_mail
 
 
+@with_environ_var("FIELDS_INCLUDED", "delete_me")
+@with_environ_var("CAPTCHA_TYPE", "recaptchav3")
 def test_captcha_field_implictly_included():
     data = {
         "delete_me": "now",

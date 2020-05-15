@@ -154,4 +154,4 @@ Example: `secret_field1,secret_field2`
 
 Default: An empty string (no fields are excluded)
 
-Note: don't forget to add your captcha fields if you set this variable!
+Note: captcha keys are automatically included.

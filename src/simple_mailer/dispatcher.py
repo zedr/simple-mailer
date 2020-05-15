@@ -15,11 +15,13 @@ class Dispatcher:
 
     data: dict
     metadata: dict
+    captcha_client: CaptchaClient
 
     def __init__(self, data=None, metadata=None):
         self._config = Config()
         self.data = {} if data is None else data
         self.metadata = {} if metadata is None else metadata
+        self.captcha_client = CaptchaClient.from_environment()
 
     def process_data(self) -> "Dispatcher":
         """Process the data, applying filters and manipulations appropriately
@@ -28,6 +30,8 @@ class Dispatcher:
 
         fields_to_include = self._config.FIELDS_INCLUDED
         if fields_to_include:
+            if self.captcha_client.key:
+                fields_to_include.append(self.captcha_client.key)
             data = {k: v for k, v in data.items() if k in fields_to_include}
         fields_to_exclude = self._config.FIELDS_EXCLUDED
         if fields_to_exclude:
@@ -95,14 +99,6 @@ class Dispatcher:
         else:
             return json.dumps(self.data)
 
-    def check_captcha(self) -> None:
-        """Verify that the captcha challenge was responded correctly
-
-        If the captchas are not configured (using environment variables) this
-        is a no-op."""
-        captcha = CaptchaClient.from_environment()
-        captcha.validate_data(self.data)
-
     def dispatch(self) -> None:
         """Dispatch a given HTTP request
 
@@ -116,7 +112,7 @@ class Dispatcher:
                 "Mailer server application configuration error"
             )
 
-        self.check_captcha()
+        self.captcha_client.validate_data(self.data)
 
         self.metadata.update(
             timestamp_utc=datetime.datetime.utcnow().isoformat()
