@@ -2,6 +2,7 @@ import json
 
 import webtest
 from simple_mailer.config import Config
+from simple_mailer.http import Location
 from simple_mailer.tests.fixtures.smtpd import SMTPServerFixture
 from simple_mailer.web import get_application
 from webtest import TestApp
@@ -41,3 +42,8 @@ def test_post_empty_payload_is_denied():
         app.post_json("/mail", {})
     except webtest.app.AppError as err:
         assert "400 Bad Request" in err.args[0]
+
+
+def test_location_url():
+    loc = Location("www.example.com", "/bar/foo")
+    assert loc.https_url == "https://www.example.com/bar/foo"

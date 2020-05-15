@@ -105,7 +105,7 @@ If the root path of this application has been made available at
 `https://api.example.com/simple-mailer`, email will need to be POSTed to
 `https://api.example.com/simple-mailer/my-mail`
 
-#### CAPTCHA
+#### CAPTCHA_TYPE
 
 The captcha protocol to use. Possible values are: `recaptchav3`
 

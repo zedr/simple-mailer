@@ -2,11 +2,10 @@ import os
 from pathlib import Path
 
 # TODO: lazy load using a metaclass?
-from typing import Tuple, List, Optional
+from typing import List, Optional
 from urllib.parse import urlparse
 
-from simple_mailer import constants
-from simple_mailer.exceptions import ConfigError
+from simple_mailer.http import Location
 
 
 class Config:
@@ -24,7 +23,7 @@ class Config:
             "MAIL_TEMPLATE_PATH",
             (Path(__file__).parent / "templates" / "default.txt").resolve(),
         )
-        self.CAPTCHA: str = os.environ.get("CAPTCHA", "")
+        self.CAPTCHA_TYPE: str = os.environ.get("CAPTCHA_TYPE", "")
         self.CAPTCHA_SECRET: str = os.environ.get("CAPTCHA_SECRET", "")
         self.CAPTCHA_VERIFY_URL: str = os.environ.get("CAPTCHA_VERIFY_URL", "")
         self._FIELDS_INCLUDED = os.environ.get("FIELDS_INCLUDED", "")
@@ -42,19 +41,13 @@ class Config:
         return True if self._USE_TLS.lower() == "true" else False
 
     @property
-    def CAPTCHA_VERIFY_LOCATION(self) -> Tuple[Optional[str], str]:
+    def CAPTCHA_VERIFY_LOCATION(self) -> Optional[Location]:
         """The location of the captcha verification site"""
         overridden_url = self.CAPTCHA_VERIFY_URL
         if overridden_url:
             parsed = urlparse(overridden_url)
-            return (parsed.hostname, parsed.path)
-        else:
-            if self.CAPTCHA == constants.CaptchaTypes.RECAPTCHA_V3.value:
-                return constants.CaptchaVerifyLocations.RECAPTCHA_V3
-            else:
-                raise ConfigError(
-                    f"Captcha type not supported: {self.CAPTCHA}"
-                )
+            return Location(parsed.hostname, parsed.path)
+        return None
 
     @property
     def FIELDS_EXCLUDED(self) -> List[str]:

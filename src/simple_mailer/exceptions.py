@@ -6,12 +6,20 @@ class ConfigError(BaseSimpleMailerException):
     """A configuration error has occurred"""
 
 
+class UnknownCaptchaProtocol(ConfigError):
+    """The configured captcha protocol is unknown and therefore unsupported"""
+
+
 class ContentTypeUnsupported(BaseSimpleMailerException):
     """The submitted data is formatted using an unsupported content type"""
 
 
 class InvalidCaptchaResponse(BaseSimpleMailerException):
-    """The captcha response key/value pair is invalid or missing"""
+    """The captcha response key/value pair is invalid"""
+
+
+class MissingCaptchaResponse(BaseSimpleMailerException):
+    """The captcha response key/value pair is missing"""
 
 
 class FailedCaptchaResponse(BaseSimpleMailerException):
