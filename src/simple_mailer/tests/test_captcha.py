@@ -26,7 +26,7 @@ def test_recaptcha_v3(smtpd, captcha_server, mocked_https_client):
             "email": "me@example.com",
             "subscribe_me": True,
             captcha.Recaptchav3Client.key: recaptcha_response,
-        }
+        },
     )
     assert response.status_code == 200
     assert smtpd.sent_mail

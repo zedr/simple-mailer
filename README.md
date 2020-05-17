@@ -133,6 +133,15 @@ Example: `https://www.google.com/recaptcha/api/siteverify`
 
 Default: An empty string.
 
+#### REDIRECT_URL
+
+If set, redirect the client to the given URL. If not, set a 200 OK response
+will be returned.
+
+Example: `https://www.example.org/thank-you'
+
+Default: An empty string
+
 #### FIELDS_EXCLUDED
 
 A list of fields in the POST request to exclude from the email. Fields are

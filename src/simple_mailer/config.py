@@ -26,6 +26,7 @@ class Config:
         self.CAPTCHA_TYPE: str = os.environ.get("CAPTCHA_TYPE", "")
         self.CAPTCHA_SECRET: str = os.environ.get("CAPTCHA_SECRET", "")
         self.CAPTCHA_VERIFY_URL: str = os.environ.get("CAPTCHA_VERIFY_URL", "")
+        self.REDIRECT_URL: str = os.environ.get("REDIRECT_URL", "")
         self._FIELDS_INCLUDED = os.environ.get("FIELDS_INCLUDED", "")
         self._FIELDS_EXCLUDED = os.environ.get("FIELDS_EXCLUDED", "")
 

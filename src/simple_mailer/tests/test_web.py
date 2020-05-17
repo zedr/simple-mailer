@@ -4,6 +4,7 @@ import webtest
 from simple_mailer.config import Config
 from simple_mailer.http import Location
 from simple_mailer.tests.fixtures.smtpd import SMTPServerFixture
+from simple_mailer.tests.helpers import with_environ_var
 from simple_mailer.web import get_application
 from webtest import TestApp
 
@@ -47,3 +48,13 @@ def test_post_empty_payload_is_denied():
 def test_location_url():
     loc = Location("www.example.com", "/bar/foo")
     assert loc.https_url == "https://www.example.com/bar/foo"
+
+
+@with_environ_var("REDIRECT_URL", "https://www.example.org/target")
+def test_if_redirect_url_set_response_is_302():
+    app = TestApp(get_application())
+    response = app.post_json(
+        "/mail", {"email": "me@example.com", "subscribe_me": True}
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"] == "https://www.example.org/target"

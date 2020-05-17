@@ -21,7 +21,12 @@ def mail() -> str:
         response.status = 503
         return str(exc)
     else:
-        response.status = 200
+        redirect_url = Config().REDIRECT_URL
+        if redirect_url:
+            response.status = 302
+            response.headers["Location"] = redirect_url
+        else:
+            response.status = 200
         return "OK"
 
 
