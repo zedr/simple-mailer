@@ -127,7 +127,17 @@ class Dispatcher:
         server.send_message(
             from_=config.MAIL_FROM,
             to=config.MAIL_TO,
-            subject=config.MAIL_SUBJECT,
+            subject=self.get_subject(),
             body=self._get_templated_body(),
         )
         server.disconnect()
+
+    def get_subject(self) -> str:
+        """Get the subject for the current email"""
+        subject = Config().MAIL_SUBJECT
+        if subject:
+            tmpl = Template(subject)
+            return tmpl.render(data=self.data, metadata=self.metadata)
+        else:
+            return subject
+

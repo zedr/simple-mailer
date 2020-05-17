@@ -34,7 +34,11 @@ class SMTPServerThread(Thread):
             ):
                 server_thread.sent_mail.append(
                     SimpleNamespace(
-                        **{"from": sender, "to": recipients, "body": msg}
+                        **{
+                            "from": sender,
+                            "to": recipients,
+                            "body": msg
+                        }
                     )
                 )
 

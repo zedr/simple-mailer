@@ -30,3 +30,15 @@ def test_dispatcher_filter_wanted_fields(smtpd, urlencoded_post_request):
     assert len(smtpd.sent_mail) == 1
     body = smtpd.sent_mail[0].body.decode("utf8")
     assert "email" not in body
+
+
+@with_environ_var(
+    "MAIL_SUBJECT",
+    "IP {{metadata.client_ip}} sent a message: {{data.msg}}"
+)
+def test_mail_subject_can_be_defined_using_template_tags(smtpd):
+    """The subject of the test mail can be configured using an env var"""
+    dis = Dispatcher(data={'msg': 'hello'}, metadata={'client_ip': '4.4.4.4'})
+    dis.dispatch()
+    body = smtpd.sent_mail[0].body.decode("utf8")
+    assert 'IP 4.4.4.4 sent a message: hello' in body

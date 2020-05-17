@@ -78,16 +78,28 @@ Example: `mailer@example.com`
 
 The subject of every sent email.
 
-Example: `A new order has been received`
+You can use Jinja2 template tags here, just like the email body. The variables
+in the template context are:
+ - data, containing all the fields that were sent (and passed the filters)
+ - metadata, containing fields for: client_ip (the originating IP address), 
+   origin (the origin of the request, e.g. the page with the form),
+   mailer_url (the URL of the mailer endpoint that processed the request)
+
+Example: `An order for {{data.goods} was sent from IP {{metadata.client_ip}}`
 
 Default: An empty string.
-
-TODO: Allow the use of fields.
 
 #### MAIL_TEMPLATE_PATH
 
 The filesystem path to the email template file that will be used for the 
 outgoing email.
+
+You can use Jinja2 template tags in the email template. The variables that will
+be made available in the template context are:
+ - data, containing all the fields that were sent (and passed the filters)
+ - metadata, containing fields for: client_ip (the originating IP address), 
+   origin (the origin of the request, e.g. the page with the form),
+   mailer_url (the URL of the mailer endpoint that processed the request)
 
 Example: `/home/myuser/templates/mail.txt`
 
