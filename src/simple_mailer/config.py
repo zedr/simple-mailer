@@ -1,45 +1,101 @@
 import os
 from pathlib import Path
-
-# TODO: lazy load using a metaclass?
-from typing import List, Optional
+from typing import Optional, Any
 from urllib.parse import urlparse
 
+from simple_mailer.exceptions import ConfigError
 from simple_mailer.http import Location
 
 
-class Config:
-    def __init__(self):
-        self.SMTP_HOST: str = os.environ.get("SMTP_HOST", "localhost")
-        self._SMTP_PORT: str = os.environ.get("SMTP_PORT", "465")
-        self.SMTP_PASSWD: str = os.environ.get("SMTP_PASSWD", "")
-        self.SMTP_USERID: str = os.environ.get("SMTP_USERID", "")
-        self.MAIL_TO: str = os.environ.get("TO_ADDRESS", "")
-        self.MAIL_FROM: str = os.environ.get("FROM_ADDRESS", "")
-        self.MAIL_SUBJECT: str = os.environ.get("MAIL_SUBJECT", "")
-        self.MAILER_PATH = os.environ.get("MAILER_PATH", "/mail")
-        self._USE_TLS: str = os.environ.get("USE_TLS", "true")
-        self.MAIL_TEMPLATE_PATH: str = os.environ.get(
-            "MAIL_TEMPLATE_PATH",
-            (Path(__file__).parent / "templates" / "default.txt").resolve(),
-        )
-        self.CAPTCHA_TYPE: str = os.environ.get("CAPTCHA_TYPE", "")
-        self.CAPTCHA_SECRET: str = os.environ.get("CAPTCHA_SECRET", "")
-        self.CAPTCHA_VERIFY_URL: str = os.environ.get("CAPTCHA_VERIFY_URL", "")
-        self.REDIRECT_URL: str = os.environ.get("REDIRECT_URL", "")
-        self._FIELDS_INCLUDED = os.environ.get("FIELDS_INCLUDED", "")
-        self._FIELDS_EXCLUDED = os.environ.get("FIELDS_EXCLUDED", "")
+class BoolStr:
+    """A factory class that can construct booleans from strings"""
 
-    @property
-    def SMTP_PORT(self) -> int:
+    def __new__(cls, value, *args, **kwargs):
+        if hasattr(value, "lower"):
+            return bool(value.lower() == "true")
+        else:
+            return bool(value)
+
+
+class SetStr:
+    sep = ","
+
+    def __new__(cls, value, *args, **kwargs):
+        if value and hasattr(value, "split"):
+            return frozenset(value.split(cls.sep))
+        else:
+            return frozenset(value)
+
+
+class _ConfigValueTypeChecker(type):
+    """Check that the type definitions for the given class are supported"""
+
+    supported_types = (int, float, str, bytes, bool, BoolStr, tuple, SetStr)
+
+    def __new__(cls, name, bases, ns):
         try:
-            return int(self._SMTP_PORT)
-        except ValueError:
-            raise ValueError("Invalid port number.")
+            annotations: dict = ns["__annotations__"]
+        except KeyError:
+            pass
+        else:
+            for key, typ in annotations.items():
+                if typ not in cls.supported_types:
+                    raise TypeError(
+                        f'Unsupported config variable type "{typ}" '
+                        f'for key "{key}". '
+                        f"Supported types are: {cls.supported_types}"
+                    )
 
-    @property
-    def USE_TLS(self) -> bool:
-        return True if self._USE_TLS.lower() == "true" else False
+        return super().__new__(cls, name, bases, ns)
+
+
+class _ConfigurationSettings:
+    """A basic, lazily loaded configuration object."""
+
+    class Defaults(metaclass=_ConfigValueTypeChecker):
+        """Default values need to be specified for each configuration var.
+
+        If not specified, the default type will be str.
+
+        Only the following primitive types are supported: str, int, float
+        See the metaclass for more information."""
+
+        SMTP_HOST: str = "localhost"
+        SMTP_PORT: int = 465
+        SMTP_USERID: str = ""
+        SMTP_PASSWD: str = ""
+        TO_ADDRESS: str = ""
+        FROM_ADDRESS: str = ""
+        MAIL_SUBJECT: str = ""
+        MAIL_TEMPLATE_PATH = (
+            Path(__file__).parent / "templates" / "default.txt"
+        )
+        MAILER_PATH: str = "/mail"
+        USE_TLS: BoolStr = BoolStr(True)
+        CAPTCHA_TYPE: str = ""
+        CAPTCHA_SECRET: str = ""
+        CAPTCHA_VERIFY_URL: str = ""
+        REDIRECT_URL: str = ""
+        FIELDS_INCLUDED: SetStr = SetStr("")
+        FIELDS_EXCLUDED: SetStr = SetStr("")
+
+    def _get(self, name: str) -> Any:
+        val = os.environ.get(name, getattr(self.Defaults, name))
+        typ = self.Defaults.__annotations__.get(name, str)
+        try:
+            return typ(val)
+        except (TypeError, ValueError) as exc:
+            raise ConfigError(
+                f'Configuration error: cannot convert value "{val}" '
+                f'for variable named "{name}" into type "{typ.__name__}": '
+                f"{exc}"
+            )
+
+    def __getattr__(self, name: str) -> Any:
+        return self._get(name)
+
+    def __getitem__(self, name: str) -> Any:
+        return getattr(self, name)
 
     @property
     def CAPTCHA_VERIFY_LOCATION(self) -> Optional[Location]:
@@ -50,16 +106,5 @@ class Config:
             return Location(parsed.hostname, parsed.path)
         return None
 
-    @property
-    def FIELDS_EXCLUDED(self) -> List[str]:
-        """A list of fields that should be ignored
 
-        Note: this overrides FIELDS_INCLUDED."""
-        fields = (name.strip() for name in self._FIELDS_EXCLUDED.split(","))
-        return [fld for fld in fields if fld]
-
-    @property
-    def FIELDS_INCLUDED(self) -> List[str]:
-        """A list of fields that should be included"""
-        fields = (name.strip() for name in self._FIELDS_INCLUDED.split(","))
-        return [fld for fld in fields if fld]
+settings = _ConfigurationSettings()

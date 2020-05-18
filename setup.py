@@ -10,7 +10,7 @@ def long_description():
 
 setup(
     name='simple-mailer',
-    version='0.11.0',
+    version='0.12.0',
     author='Rigel Di Scala',
     author_email='zedr@zedr.com',
     description='A simple mailer for web forms',

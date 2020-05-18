@@ -1,7 +1,7 @@
 import json
 
 import webtest
-from simple_mailer.config import Config
+from simple_mailer.config import settings
 from simple_mailer.http import Location
 from simple_mailer.tests.fixtures.smtpd import SMTPServerFixture
 from simple_mailer.tests.helpers import with_environ_var
@@ -14,7 +14,7 @@ def test_root_path_has_link_to_mailer():
     response = app.get("/")
     assert response.status_code == 200
     data = json.loads(response.body.decode("utf8"))
-    assert data["mailer"] == Config().MAILER_PATH
+    assert data["mailer"] == settings.MAILER_PATH
 
 
 def test_post_urlencode_mail_app(smtpd: SMTPServerFixture):

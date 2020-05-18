@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 from simple_mailer import exceptions
-from simple_mailer.config import Config
+from simple_mailer.config import settings
 from simple_mailer.http import Location
 
 
@@ -36,12 +36,11 @@ class CaptchaClient:
     def from_environment() -> "CaptchaClient":
         """Choose and create a captcha client by introspecting the environment
         """
-        config = Config()
-        protocol = config.CAPTCHA_TYPE
+        protocol = settings.CAPTCHA_TYPE
         if not protocol:
             return CaptchaClient()
         elif protocol == Recaptchav3Client.protocol_name:
-            loc = config.CAPTCHA_VERIFY_LOCATION
+            loc = settings.CAPTCHA_VERIFY_LOCATION
             if loc is None:
                 return Recaptchav3Client()
             else:
@@ -65,9 +64,8 @@ class Recaptchav3Client(CaptchaClient):
 
     def validate_data(self, data: Dict) -> None:
         """Connect to the server and validate the given response"""
-        config = Config()
         resp = self.extract_response(data)
-        params = {"secret": config.CAPTCHA_SECRET, "response": resp}
+        params = {"secret": settings.CAPTCHA_SECRET, "response": resp}
         headers = {
             "Content-type": "application.json",
             "Accept": "application/json",

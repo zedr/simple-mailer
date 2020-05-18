@@ -6,7 +6,7 @@ import bottle
 from jinja2 import Template, UndefinedError, TemplateError
 from simple_mailer import exceptions
 from simple_mailer.captcha import CaptchaClient
-from simple_mailer.config import Config
+from simple_mailer.config import settings
 from simple_mailer.mailer import Mailer
 
 
@@ -18,7 +18,6 @@ class Dispatcher:
     captcha_client: CaptchaClient
 
     def __init__(self, data=None, metadata=None):
-        self._config = Config()
         self.data = {} if data is None else data
         self.metadata = {} if metadata is None else metadata
         self.captcha_client = CaptchaClient.from_environment()
@@ -28,12 +27,12 @@ class Dispatcher:
         """
         data = self.data
 
-        fields_to_include = self._config.FIELDS_INCLUDED
+        fields_to_include = set(settings.FIELDS_INCLUDED)
         if fields_to_include:
             if self.captcha_client.key:
-                fields_to_include.append(self.captcha_client.key)
+                fields_to_include.add(self.captcha_client.key)
             data = {k: v for k, v in data.items() if k in fields_to_include}
-        fields_to_exclude = self._config.FIELDS_EXCLUDED
+        fields_to_exclude = settings.FIELDS_EXCLUDED
         if fields_to_exclude:
             data = {
                 k: v for k, v in data.items() if k not in fields_to_exclude
@@ -70,14 +69,9 @@ class Dispatcher:
         self.process_data()
         return self
 
-    @property
-    def template_path(self) -> str:
-        """The path to the template file"""
-        return self._config.MAIL_TEMPLATE_PATH
-
     def _get_templated_body(self) -> str:
         """Assemble and return the body of the message using the template"""
-        tmpl_path = self.template_path
+        tmpl_path = settings.MAIL_TEMPLATE_PATH
         if tmpl_path:
             try:
                 with open(tmpl_path) as fd:
@@ -104,14 +98,6 @@ class Dispatcher:
 
         Returns true or false depending on the outcome.
         """
-        try:
-            config = Config()
-        except ValueError:
-            bottle.response.status_code = 500
-            raise exceptions.ConfigError(
-                "Mailer server application configuration error"
-            )
-
         self.captcha_client.validate_data(self.data)
 
         self.metadata.update(
@@ -119,14 +105,14 @@ class Dispatcher:
         )
 
         server = Mailer(
-            host=config.SMTP_HOST,
-            port=config.SMTP_PORT,
-            use_tls=config.USE_TLS,
+            host=settings.SMTP_HOST,
+            port=settings.SMTP_PORT,
+            use_tls=settings.USE_TLS,
         )
         server.connect()
         server.send_message(
-            from_=config.MAIL_FROM,
-            to=config.MAIL_TO,
+            from_=settings.FROM_ADDRESS,
+            to=settings.TO_ADDRESS,
             subject=self.get_subject(),
             body=self._get_templated_body(),
         )
@@ -134,10 +120,9 @@ class Dispatcher:
 
     def get_subject(self) -> str:
         """Get the subject for the current email"""
-        subject = Config().MAIL_SUBJECT
+        subject = settings.MAIL_SUBJECT
         if subject:
             tmpl = Template(subject)
             return tmpl.render(data=self.data, metadata=self.metadata)
         else:
             return subject
-
