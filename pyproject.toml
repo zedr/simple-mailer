@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simple-mailer"
-version = "0.12.0"
+version = "0.13.0"
 description = "A simple mailer"
 authors = ["Rigel Di Scala <zedr@zedr.com>"]
 

@@ -93,6 +93,14 @@ class Dispatcher:
         else:
             return json.dumps(self.data)
 
+    def get_server(self) -> Mailer:
+        """Get an instance of the mailer server"""
+        return Mailer(
+            host=settings.SMTP_HOST,
+            port=settings.SMTP_PORT,
+            use_tls=settings.USE_TLS,
+        )
+
     def dispatch(self) -> None:
         """Dispatch a given HTTP request
 
@@ -104,19 +112,13 @@ class Dispatcher:
             timestamp_utc=datetime.datetime.utcnow().isoformat()
         )
 
-        server = Mailer(
-            host=settings.SMTP_HOST,
-            port=settings.SMTP_PORT,
-            use_tls=settings.USE_TLS,
-        )
-        server.connect()
-        server.send_message(
-            from_=settings.FROM_ADDRESS,
-            to=settings.TO_ADDRESS,
-            subject=self.get_subject(),
-            body=self._get_templated_body(),
-        )
-        server.disconnect()
+        cfg = {
+            "from_": settings.FROM_ADDRESS,
+            "to": settings.TO_ADDRESS,
+            "subject": self.get_subject(),
+            "body": self._get_templated_body(),
+        }
+        self.get_server().connect().send_message(**cfg).disconnect()
 
     def get_subject(self) -> str:
         """Get the subject for the current email"""

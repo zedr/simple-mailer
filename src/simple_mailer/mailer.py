@@ -25,7 +25,7 @@ class Mailer:
     use_tls: bool = True
     _conn: smtplib.SMTP = Optional[None]
 
-    def connect(self) -> None:
+    def connect(self) -> "Mailer":
         """Connect to the remote server"""
         if self.host and self.port > 0:
             try:
@@ -38,12 +38,13 @@ class Mailer:
             else:
                 if self.use_tls:
                     self._conn.starttls()
+                return self
         else:
             raise NotConnectedError(
                 f"Cannot connect to: {self.host}:{self.port}"
             )
 
-    def login(self, userid: str, passwd: str) -> None:
+    def login(self, userid: str, passwd: str) -> "Mailer":
         """Login to the remote server
 
         Parameters:
@@ -54,8 +55,9 @@ class Mailer:
             raise NotConnectedError("Not connected. Please connect first.")
         else:
             self._conn.login(userid, passwd)
+            return self
 
-    def send_message(self, from_="", to="", subject="", body="") -> None:
+    def send_message(self, from_="", to="", subject="", body="") -> "Mailer":
         """Send an email message
 
         Parameters:
@@ -70,7 +72,9 @@ class Mailer:
         msg["To"] = to
         msg.set_content(body)
         self._conn.send_message(msg)
+        return self
 
-    def disconnect(self) -> None:
+    def disconnect(self) -> "Mailer":
         """Disconnect from the remote server"""
         self._conn.close()
+        return self
