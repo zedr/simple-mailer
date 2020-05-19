@@ -8,7 +8,7 @@ A simple Python mailer program that can be run in the WSGI environment of a
 shared hosting provider.
 
 This program provides a web resource that can be used by an HTML web form 
-to send mail to a specific email address.
+to send a plain text email to a specific email address.
 
 ### Features:
  - Can be triggered by a WSGI call or run standalone as a daemon
@@ -109,13 +109,11 @@ Default: The default template will be used.
 
 The path of the URL where the mailer resource will be available.
 
-Example: `my-mail`
-
 Default: `mail`
 
 If the root path of this application has been made available at 
 `https://api.example.com/simple-mailer`, email will need to be POSTed to
-`https://api.example.com/simple-mailer/my-mail`
+`https://api.example.com/simple-mailer/mail`
 
 #### CAPTCHA_TYPE
 
@@ -176,3 +174,21 @@ Example: `secret_field1,secret_field2`
 Default: An empty string (no fields are excluded)
 
 Note: captcha keys are automatically included.
+
+#### ENABLE_DEBUG
+
+Enable the debug resource. This provides various diagnostic information.
+
+The resource will be made available at `DEBUG_PATH`
+
+Default: `false`
+
+Note: Only enable it when you're trying to debug a problem, 
+since it will expose your  configuration variables and is expensive to render.
+
+#### DEBUG_PATH
+
+The path where the debug resource will be made available.
+
+Default: `/debug`
+

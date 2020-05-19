@@ -1,5 +1,5 @@
 import pytest
-from simple_mailer.config import settings, BoolStr, SetStr
+from simple_mailer.config import settings, BoolStr, TupleStr
 from simple_mailer.exceptions import ConfigError
 from simple_mailer.tests.helpers import with_environ_var
 
@@ -16,10 +16,10 @@ def test_bool_str_type():
 
 
 def test_list_str_type():
-    assert SetStr("a,b,c") == frozenset(("a", "b", "c"))
-    assert SetStr("a") == {"a"}
-    assert SetStr([]) == frozenset()
-    assert SetStr("") == frozenset()
+    assert TupleStr("a,b,c") == ("a", "b", "c")
+    assert TupleStr("a") == ("a",)
+    assert TupleStr([]) == ()
+    assert TupleStr("") == ()
 
 
 @with_environ_var("SMTP_PORT", 4465)

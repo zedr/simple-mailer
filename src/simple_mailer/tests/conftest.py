@@ -6,6 +6,8 @@ import bottle
 import pytest
 from simple_mailer.config import settings
 from simple_mailer.tests.fixtures.smtpd import SMTPServerFixture
+from simple_mailer.web import get_application
+from webtest import TestApp
 
 
 @pytest.fixture(scope="session")
@@ -17,6 +19,11 @@ def smtpd(request):
     os.environ.setdefault("TO_ADDRESS", "you@example.com")
     request.addfinalizer(fixture.close)
     return fixture
+
+
+@pytest.fixture
+def test_http_client():
+    return TestApp(get_application())
 
 
 @pytest.fixture(autouse=True)
