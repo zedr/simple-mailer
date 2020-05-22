@@ -63,7 +63,7 @@ class Dispatcher:
             "origin": request.remote_addr or "",
             "client_ip": client_ip,
         }
-        body = request.body.read().decode("utf8")
+        body = request.body.read().decode(request.POST.input_encoding)
         if content_type == "application/x-www-form-urlencoded":
             data = {k: (", ").join(v) for k, v in parse_qs(body).items()}
         elif content_type == "application/json":
