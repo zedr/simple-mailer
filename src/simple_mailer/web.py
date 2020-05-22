@@ -5,12 +5,15 @@ from simple_mailer import checks
 from simple_mailer import exceptions
 from simple_mailer.config import settings
 from simple_mailer.dispatcher import Dispatcher
-from simple_mailer.utils import cloak
+from simple_mailer.utils import cloak, get_logger
+
+log = get_logger(__name__)
 
 
 @post(settings.MAILER_PATH)
 def mail() -> str:
     """A resource that can send mail"""
+    log.info(f"Got a new submission from client with IP {request.remote_addr}")
     try:
         Dispatcher().parse_request(request).dispatch()
     except exceptions.ContentTypeUnsupported as exc:

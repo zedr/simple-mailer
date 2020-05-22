@@ -6,6 +6,9 @@ from typing import Dict
 from simple_mailer import exceptions
 from simple_mailer.config import settings
 from simple_mailer.http import Location
+from simple_mailer.utils import get_logger
+
+log = get_logger(__name__)
 
 
 @dataclass
@@ -22,11 +25,13 @@ class CaptchaClient:
         try:
             return data[self.key]
         except KeyError:
-            raise exceptions.MissingCaptchaResponse(
+            err = (
                 f"The expected response for "
                 f"captcha protocol '{self.protocol_name}' was not found. "
                 f"Expected a field named {self.key}."
             )
+            log.error(err)
+            raise exceptions.MissingCaptchaResponse(err)
 
     def validate_data(self, data: Dict) -> None:
         """Introspect the given data to infer and validate the response"""
@@ -38,18 +43,26 @@ class CaptchaClient:
         """
         protocol = settings.CAPTCHA_TYPE
         if not protocol:
+            log.debug("No captcha protocol configured for use")
             return CaptchaClient()
         elif protocol == Recaptchav3Client.protocol_name:
             loc = settings.CAPTCHA_VERIFY_LOCATION
             if loc is None:
-                return Recaptchav3Client()
+                client = Recaptchav3Client()
             else:
-                return Recaptchav3Client(location=loc)
+                client = Recaptchav3Client(location=loc)
+            log.debug(
+                f"Using captcha protocol {client.protocol_name} with "
+                f"verification URL at {client.location.https_url}"
+            )
+            return client
         else:
-            raise exceptions.UnknownCaptchaProtocol(
+            err = (
                 f"Configuration Error: unsupported Captcha protocol: "
                 f"{protocol}"
             )
+            log.error(err)
+            raise exceptions.UnknownCaptchaProtocol(err)
 
 
 @dataclass
@@ -70,20 +83,33 @@ class Recaptchav3Client(CaptchaClient):
             "Content-type": "application.json",
             "Accept": "application/json",
         }
+        log.debug(f"Validating catpcha response data: {params}")
         conn = http.client.HTTPSConnection(self.location.hostname)
+        log.debug(
+            f"Sending captcha verification POST request to "
+            f"{self.location.https_url} ..."
+        )
         conn.request("POST", self.location.path, json.dumps(params), headers)
         http_response = conn.getresponse()
+        log.debug(f"Got {http_response.status} response from catpcha server.")
         if http_response.status == 200:
             data = json.load(http_response)
             if data["success"]:
+                log.debug(f"Captcha response was validated successfully.")
                 return None
             else:
-                raise exceptions.InvalidCaptchaResponse(
+                err = (
                     f"The POST request did not contain the correct response. "
                     f"The POST data should include the response using a key "
                     f'named "{self.key}" and a value for it.'
                 )
-        raise exceptions.FailedCaptchaResponse(
+                log.debug(err)
+                log.warning("Client failed captcha verification.")
+                raise exceptions.InvalidCaptchaResponse(err)
+        err = (
             f"The captcha response verification has failed. "
             f"The challenge response provided in the POST data was: {resp}"
         )
+        log.debug(err)
+        log.warning("Client failed captcha verification.")
+        raise exceptions.FailedCaptchaResponse(err)

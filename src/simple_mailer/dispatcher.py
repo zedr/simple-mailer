@@ -8,6 +8,9 @@ from simple_mailer import exceptions
 from simple_mailer.captcha import CaptchaClient
 from simple_mailer.config import settings
 from simple_mailer.mailer import Mailer
+from simple_mailer.utils import get_logger
+
+log = get_logger(__name__)
 
 
 class Dispatcher:
@@ -27,6 +30,8 @@ class Dispatcher:
         """
         data = self.data
 
+        log.debug(f"Received payload: {data}")
+
         fields_to_include = set(settings.FIELDS_INCLUDED)
         if fields_to_include:
             if self.captcha_client.key:
@@ -38,6 +43,8 @@ class Dispatcher:
                 k: v for k, v in data.items() if k not in fields_to_exclude
             }
 
+        log.debug(f"After filters were applied, the payload was: {data}")
+
         if not data:
             raise exceptions.SubmittedDataInvalid("Need at least one field")
         self.data = data
@@ -48,6 +55,9 @@ class Dispatcher:
         env = request.environ
         content_type = env["CONTENT_TYPE"]
         client_ip = env.get("HTTP_X_FORWARDED_FOR", env.get("REMOTE_ADDR", ""))
+        log.info(
+            f"Processing HTTP request from client with IP {client_ip} ..."
+        )
         self.metadata = {
             "mailer_url": request.url,
             "origin": request.remote_addr or "",
@@ -60,11 +70,17 @@ class Dispatcher:
             try:
                 data = json.loads(body)
             except json.JSONDecodeError:
-                raise exceptions.SubmittedDataInvalid("Invalid JSON")
+                err = log.error("Received invalid JSON")
+                log.debug(f"Invalid JSON: {body}")
+                raise exceptions.SubmittedDataInvalid(err)
+            else:
+                log.debug(f"Submitted payload: {data}")
         else:
-            raise exceptions.ContentTypeUnsupported(
-                f"Cannot process content type: {content_type}"
+            err = (
+                f"Client sent request unsupported content type: {content_type}"
             )
+            log.warning(err)
+            raise exceptions.ContentTypeUnsupported(err)
         self.data = data
         self.process_data()
         return self
@@ -86,10 +102,12 @@ class Dispatcher:
                             f" {exc.message}"
                         )
             except IOError:
-                raise exceptions.ConfigError(
+                err = (
                     f"Cannot open template file. "
                     f"Check if it exists and is readable."
                 )
+                log.error(err)
+                raise exceptions.ConfigError(err)
         else:
             return json.dumps(self.data)
 
@@ -119,6 +137,9 @@ class Dispatcher:
             "body": self._get_templated_body(),
         }
         self.get_server().connect().send_message(**cfg).disconnect()
+        log.info(
+            f"Sent email to server {settings.SMTP_HOST}:{settings.SMTP_PORT}"
+        )
 
     def get_subject(self) -> str:
         """Get the subject for the current email"""

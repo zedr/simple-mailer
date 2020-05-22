@@ -196,3 +196,10 @@ The path where the debug resource will be made available.
 
 Default: `/debug`
 
+
+#### LOG_LEVEL
+
+The log level, from a choice of: `DEBUG`, `INFO` `WARN`, `ERROR`, and
+`CRITICAL`.
+
+Default: `WARN`

@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from typing import Optional, Any, Dict
@@ -5,6 +6,8 @@ from urllib.parse import urlparse
 
 from simple_mailer.exceptions import ConfigError
 from simple_mailer.http import Location
+
+_supported_log_level_names = ("DEBUG", "INFO", "WARN", "ERROR", "CRITICAL")
 
 
 class BoolStr:
@@ -80,18 +83,23 @@ class _ConfigurationSettings:
         FIELDS_EXCLUDED: TupleStr = TupleStr("")
         ENABLE_DEBUG: BoolStr = BoolStr(False)
         DEBUG_PATH: str = "/debug"
+        LOG_LEVEL: str = "WARN"
 
     def _get(self, name: str) -> Any:
-        val = os.environ.get(name, getattr(self.Defaults, name))
-        typ = self.Defaults.__annotations__.get(name, str)
         try:
-            return typ(val)
-        except (TypeError, ValueError) as exc:
-            raise ConfigError(
-                f'Configuration error: cannot convert value "{val}" '
-                f'for variable named "{name}" into type "{typ.__name__}": '
-                f"{exc}"
-            )
+            val = os.environ.get(name, getattr(self.Defaults, name))
+        except AttributeError:
+            raise ConfigError(f"Unsupported configuration parameter: {name}")
+        else:
+            typ = self.Defaults.__annotations__.get(name, str)
+            try:
+                return typ(val)
+            except (TypeError, ValueError) as exc:
+                raise ConfigError(
+                    f'Configuration error: cannot convert value "{val}" '
+                    f'for variable named "{name}" into type "{typ.__name__}": '
+                    f"{exc}"
+                )
 
     def __getattr__(self, name: str) -> Any:
         return self._get(name)
@@ -107,6 +115,14 @@ class _ConfigurationSettings:
             parsed = urlparse(overridden_url)
             return Location(parsed.hostname, parsed.path)
         return None
+
+    @property
+    def LOG_LEVEL(self) -> int:
+        name = self._get("LOG_LEVEL").upper()
+        if name in _supported_log_level_names:
+            return getattr(logging, name)
+        else:
+            raise ConfigError("Unsupported level name: " + name)
 
     @classmethod
     def get_defaults(cls) -> Dict:
