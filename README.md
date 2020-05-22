@@ -8,7 +8,8 @@ A simple Python mailer program that can be run in the WSGI environment of a
 shared hosting provider.
 
 This program provides a web resource that can be used by an HTML web form 
-to send a plain text email to a specific email address.
+to send a plain text email to a specific email address. HTML mail are not
+supported.
 
 ### Features:
  - Can be triggered by a WSGI call or run standalone as a daemon
@@ -195,7 +196,6 @@ since it will expose your configuration variables and is expensive to render.
 The path where the debug resource will be made available.
 
 Default: `/debug`
-
 
 #### LOG_LEVEL
 
