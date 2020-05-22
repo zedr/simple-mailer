@@ -66,5 +66,23 @@ def get_application() -> AppStack:
     return default_app()
 
 
-def run_application():
+def run_application() -> None:
     run(host="localhost", port=8080)
+
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--host", default="localhost", required=False, dest="host"
+    )
+    parser.add_argument(
+        "--post", default=8080, type=int, required=False, dest="port"
+    )
+    parsed = parser.parse_args()
+    run(host=parsed.host, port=parsed.port)
+
+
+if __name__ == "__main__":
+    main()

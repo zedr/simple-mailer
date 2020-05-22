@@ -10,7 +10,7 @@ def long_description():
 
 setup(
     name='simple-mailer',
-    version='0.14.1',
+    version='0.14.2',
     author='Rigel Di Scala',
     author_email='zedr@zedr.com',
     description='A simple mailer for web forms',
@@ -28,7 +28,7 @@ setup(
     py_modules=['simple_mailer'],
     include_package_data=True,
     entry_points={
-        'console_scripts': ['simple-mailer=simple_mailer.web:run_application']
+        'console_scripts': ['simple-mailer=simple_mailer.web:main']
     },
     classifiers=[
         'Programming Language :: Python :: 3',
