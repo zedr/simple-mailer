@@ -65,7 +65,7 @@ class Dispatcher:
         }
         body = request.body.read().decode("utf8")
         if content_type == "application/x-www-form-urlencoded":
-            data = parse_qs(body)
+            data = {k: (", ").join(v) for k, v in parse_qs(body).items()}
         elif content_type == "application/json":
             try:
                 data = json.loads(body)
