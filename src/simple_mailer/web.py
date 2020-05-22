@@ -5,6 +5,7 @@ from simple_mailer import checks
 from simple_mailer import exceptions
 from simple_mailer.config import settings
 from simple_mailer.dispatcher import Dispatcher
+from simple_mailer.utils import cloak
 
 
 @post(settings.MAILER_PATH)
@@ -38,7 +39,7 @@ def debug() -> str:
         ns.update(
             {
                 "version": checks.get_version(),
-                "environment_variables": checks.get_env_variables(),
+                "environment_variables": cloak(checks.get_env_variables()),
                 "smtp_connection": checks.get_smtp_connection(),
             }
         )

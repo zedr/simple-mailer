@@ -37,11 +37,13 @@ The hostname of the SMTP server that will send the email.
 
 Example: `smtp.example.com`
 
+Default: `localhost`
+
 #### SMTP_PORT
 
 The port number of the SMTP server at `SMTP_HOST`.
 
-Example: `465`
+Default: `465`
 
 #### USE_TLS
 
@@ -54,6 +56,8 @@ Default: `true`
 The id of the SMTP user account on the SMTP server at `SMTP_HOST`.
 
 Example: `mailer@example.com`
+
+Default: An empty string.
 
 #### SMTP_PASSWORD
 
@@ -184,7 +188,7 @@ The resource will be made available at `DEBUG_PATH`
 Default: `false`
 
 Note: Only enable it when you're trying to debug a problem, 
-since it will expose your  configuration variables and is expensive to render.
+since it will expose your configuration variables and is expensive to render.
 
 #### DEBUG_PATH
 
