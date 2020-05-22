@@ -33,6 +33,26 @@ def test_post_json_mail_app(smtpd: SMTPServerFixture, test_http_client):
     assert "timestamp_utc" in body
 
 
+@with_environ_var("REDIRECT_URL", "{{ ORIGIN }}")
+def test_post_with_referer(smtpd: SMTPServerFixture, test_http_client):
+    response = test_http_client.post_json(
+        "/mail", {"email": "me@example.com", "subscribe_me": True},
+        headers={'ORIGIN': 'http://www.example.org/thank-you'}
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"] == "http://www.example.org/thank-you"
+
+
+@with_environ_var("REDIRECT_URL", "{{ REFERER }}")
+def test_post_with_referer(smtpd: SMTPServerFixture, test_http_client):
+    response = test_http_client.post_json(
+        "/mail", {"email": "me@example.com", "subscribe_me": True},
+        headers={'REFERER': 'http://www.example.org/thank-you'}
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"] == "http://www.example.org/thank-you"
+
+
 def test_post_empty_payload_is_denied(test_http_client):
     try:
         test_http_client.post_json("/mail", {})

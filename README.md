@@ -151,9 +151,13 @@ Default: An empty string.
 #### REDIRECT_URL
 
 If set, redirect the client to the given URL. If not, set a 200 OK response
-will be returned.
+will be returned. The following template tags can be used: `{{ REFERER }}`, to
+use the value of the Referer (sic) field of the request, and `{{ ORIGIN }}`,
+to use the value of the Origin field of the request.
 
-Example: `https://www.example.org/thank-you'
+Example: `https://www.example.org/thank-you`
+
+Example: `{{ REFERER }}`
 
 Default: An empty string
 

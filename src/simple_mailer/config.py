@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Optional, Any, Dict
 from urllib.parse import urlparse
 
+from bottle import request
+from jinja2 import Template
 from simple_mailer.exceptions import ConfigError
 from simple_mailer.http import Location
 
@@ -71,7 +73,7 @@ class _ConfigurationSettings:
         FROM_ADDRESS: str = ""
         MAIL_SUBJECT: str = ""
         MAIL_TEMPLATE_PATH = (
-            Path(__file__).parent / "templates" / "default.txt"
+                Path(__file__).parent / "templates" / "default.txt"
         )
         MAILER_PATH: str = "/mail"
         USE_TLS: BoolStr = BoolStr(True)
@@ -123,6 +125,22 @@ class _ConfigurationSettings:
             return getattr(logging, name)
         else:
             raise ConfigError("Unsupported level name: " + name)
+
+    @property
+    def REDIRECT_URL(self) -> str:
+        """The URL where the client will be redirected
+
+        Can also be one of the following template tags: REFERER, ORIGIN
+        """
+        redirect_url = self._get("REDIRECT_URL")
+        if "{{" in redirect_url:
+            tmpl = Template(redirect_url)
+            return tmpl.render(
+                ORIGIN=request.headers.get('ORIGIN', ''),
+                REFERER=request.headers.get('REFERER', '')
+            )
+        else:
+            return redirect_url
 
     @classmethod
     def get_defaults(cls) -> Dict:
