@@ -136,8 +136,8 @@ class _ConfigurationSettings:
         if "{{" in redirect_url:
             tmpl = Template(redirect_url)
             return tmpl.render(
-                ORIGIN=request.headers.get('ORIGIN', ''),
-                REFERER=request.headers.get('REFERER', '')
+                ORIGIN=request.headers.get('ORIGIN', '{{ ORIGIN }}'),
+                REFERER=request.headers.get('REFERER', '{{ REFERER }}')
             )
         else:
             return redirect_url
