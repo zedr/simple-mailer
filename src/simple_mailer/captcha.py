@@ -99,11 +99,10 @@ class Recaptchav3Client(CaptchaClient):
                 return None
             else:
                 err = (
-                    f"The POST request did not contain the correct response. "
-                    f"The POST data should include the response using a key "
-                    f'named "{self.key}" and a value for it.'
+                    f"Captcha response failed validation"
                 )
                 log.debug(err)
+                log.debug(f'Got this data from server: {data}')
                 log.warning("Client failed captcha verification.")
                 raise exceptions.InvalidCaptchaResponse(err)
         err = (
