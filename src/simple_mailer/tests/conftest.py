@@ -81,6 +81,8 @@ def captcha_server(request):
 def mocked_https_client(request):
     import http.client
 
+    requests = []
+
     class MockedHTTPResponse:
         status = 200
 
@@ -92,7 +94,14 @@ def mocked_https_client(request):
             self.host = host
 
         def request(self, method, path, params, headers):
-            pass
+            requests.append(
+                {
+                    "method": method,
+                    "path": path,
+                    "params": params,
+                    "headers": headers
+                }
+            )
 
         def getresponse(self):
             return MockedHTTPResponse()
@@ -104,4 +113,4 @@ def mocked_https_client(request):
         http.client.HTTPSConnection = _HTTPSConnection
 
     request.addfinalizer(fin)
-    return None
+    return requests

@@ -1,5 +1,6 @@
 import random
 import string
+import urllib.parse
 
 from simple_mailer import captcha
 from simple_mailer.dispatcher import Dispatcher
@@ -9,10 +10,17 @@ from webtest import TestApp
 
 
 @with_environ_var("CAPTCHA_TYPE", "recaptchav3")
+@with_environ_var("CAPTCHA_VERIFY_URL", "http://www.example.org/verify")
 def test_captcha_interface(captcha_server, mocked_https_client):
-    """Test the behaviour of the generic captcha object"""
+    """Test the behaviour of the generic captcha object
+
+    The HTTPS url is always forced.
+    """
     client = captcha.CaptchaClient.from_environment()
     assert client.validate_data({client.key: "abc"}) is None
+    assert client.location.https_url == "https://www.example.org/verify"
+    params = urllib.parse.parse_qs(mocked_https_client[0]["params"])
+    assert params["response"] == ["abc"]
 
 
 def test_recaptcha_v3(smtpd, captcha_server, mocked_https_client):

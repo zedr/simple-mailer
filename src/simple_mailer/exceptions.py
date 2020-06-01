@@ -18,6 +18,10 @@ class InvalidCaptchaResponse(BaseSimpleMailerException):
     """The captcha response key/value pair is invalid"""
 
 
+class CaptchaServerConnectionRefused(BaseSimpleMailerException):
+    """Could not connect to captcha server"""
+
+
 class MissingCaptchaResponse(BaseSimpleMailerException):
     """The captcha response key/value pair is missing"""
 

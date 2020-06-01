@@ -2,6 +2,7 @@ import http.client
 import json
 from dataclasses import dataclass
 from typing import Dict
+from urllib.parse import urlencode
 
 from simple_mailer import exceptions
 from simple_mailer.config import settings
@@ -80,7 +81,7 @@ class Recaptchav3Client(CaptchaClient):
         resp = self.extract_response(data)
         params = {"secret": settings.CAPTCHA_SECRET, "response": resp}
         headers = {
-            "Content-type": "application.json",
+            "Content-type": "application/x-www-form-urlencoded",
             "Accept": "application/json",
         }
         log.debug(f"Validating catpcha response data: {params}")
@@ -89,7 +90,15 @@ class Recaptchav3Client(CaptchaClient):
             f"Sending captcha verification POST request to "
             f"{self.location.https_url} ..."
         )
-        conn.request("POST", self.location.path, json.dumps(params), headers)
+        try:
+            conn.request(
+                "POST", self.location.https_url, urlencode(params), headers
+            )
+        except ConnectionRefusedError as exc:
+            raise exceptions.CaptchaServerConnectionRefused(
+                f'Could not connect to the Captcha server '
+                f'at "{self.location.path}", reason: {exc}'
+            )
         http_response = conn.getresponse()
         log.debug(f"Got {http_response.status} response from catpcha server.")
         if http_response.status == 200:
