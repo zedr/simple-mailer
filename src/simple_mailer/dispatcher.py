@@ -86,15 +86,22 @@ class Dispatcher:
         return self
 
     def _get_templated_body(self) -> str:
-        """Assemble and return the body of the message using the template"""
+        """Assemble and return the body of the message using the template
+
+        Any captcha data is automatically removed, if present.
+        """
         tmpl_path = settings.MAIL_TEMPLATE_PATH
+        data = self.data.copy()
+        if self.captcha_client.key:
+            data.pop(self.captcha_client.key)
         if tmpl_path:
             try:
                 with open(tmpl_path) as fd:
                     tmpl = Template(fd.read())
                     try:
                         return tmpl.render(
-                            data=self.data, metadata=self.metadata
+                            data=data,
+                            metadata=self.metadata
                         )
                     except UndefinedError as exc:
                         raise TemplateError(

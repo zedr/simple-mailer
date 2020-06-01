@@ -1,11 +1,11 @@
 Form submission
 ===============
-{% for key, value in data.items() | sort %}
+{% for key, value in data.items() | sort -%}
 {{ key|e }}: {{ value|e }}
-{% endfor %}
+{%- endfor %}
 
 Metadata
 ========
-{% for key, value in metadata.items() | sort %}
+{% for key, value in metadata.items() | sort -%}
 {{ key|e }}: {{ value|e }}
-{% endfor %}
+{%- endfor %}
