@@ -66,6 +66,12 @@ The password of the SMTP user account on the SMTP server at `SMTP_HOST`.
 
 Example: `rosebud20`
 
+#### SMTP_TIMEOUT
+
+The maximum number of seconds allowed for a SMTP connection to be established.
+
+Default: 5
+
 #### TO_ADDRESS
 
 The recipient email address that will receive the email.

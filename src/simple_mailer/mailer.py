@@ -4,6 +4,7 @@ from email.message import EmailMessage
 from typing import Optional
 
 from simple_mailer import exceptions
+from simple_mailer.config import settings
 
 
 class NotConnectedError(Exception):
@@ -29,7 +30,11 @@ class Mailer:
         """Connect to the remote server"""
         if self.host and self.port > 0:
             try:
-                self._conn = smtplib.SMTP(host=self.host, port=self.port)
+                self._conn = smtplib.SMTP(
+                    host=self.host,
+                    port=self.port,
+                    timeout=settings.SMTP_TIMEOUT
+                )
             except ConnectionRefusedError as exc:
                 raise exceptions.MailServerError(
                     f"Could not connect to SMTP server "

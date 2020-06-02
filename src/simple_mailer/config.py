@@ -69,6 +69,7 @@ class _ConfigurationSettings:
         SMTP_PORT: int = 465
         SMTP_USERID: str = ""
         SMTP_PASSWD: str = ""
+        SMTP_TIMEOUT: int = 5
         TO_ADDRESS: str = ""
         FROM_ADDRESS: str = ""
         MAIL_SUBJECT: str = ""
