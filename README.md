@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.com/zedr/simple-mailer.svg?branch=master)](https://travis-ci.com/zedr/simple-mailer)
 [![](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/download/releases/3.7.0/)
 [![PyPi version](https://img.shields.io/pypi/v/simple-mailer.svg)](https://pypi.python.org/pypi/simple-mailer/)
-![t](https://img.shields.io/badge/status-beta-orange.svg)
+![t](https://img.shields.io/badge/status-release-green.svg)
 
 A simple Python mailer program that can be run in the WSGI environment of a
 shared hosting provider.
