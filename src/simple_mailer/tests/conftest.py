@@ -13,7 +13,9 @@ from webtest import TestApp
 @pytest.fixture(scope="session")
 def smtpd(request):
     fixture = SMTPServerFixture()
+    os.environ.setdefault("SMTP_HOST", "localhost")
     os.environ.setdefault("SMTP_PORT", str(fixture.port))
+    os.environ.setdefault("SMTP_TIMEOUT", "1")
     os.environ.setdefault("USE_TLS", "false")
     os.environ.setdefault("FROM_ADDRESS", "me@example.com")
     os.environ.setdefault("TO_ADDRESS", "you@example.com")

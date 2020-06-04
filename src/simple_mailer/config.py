@@ -65,7 +65,7 @@ class _ConfigurationSettings:
         Only certain types are supported, e.g. str, float, bool, etc.
         See the metaclass for more information."""
 
-        SMTP_HOST: str = "localhost"
+        SMTP_HOST: str = ""
         SMTP_PORT: int = 465
         SMTP_USERID: str = ""
         SMTP_PASSWD: str = ""

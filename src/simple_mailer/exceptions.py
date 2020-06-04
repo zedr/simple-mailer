@@ -6,6 +6,10 @@ class ConfigError(BaseSimpleMailerException):
     """A configuration error has occurred"""
 
 
+class SmtpServerNotConfiguredError(ConfigError):
+    """The SMTP server is not correctly configured"""
+
+
 class UnknownCaptchaProtocol(ConfigError):
     """The configured captcha protocol is unknown and therefore unsupported"""
 

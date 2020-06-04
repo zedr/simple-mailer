@@ -15,6 +15,14 @@ def test_root_path_has_link_to_mailer(test_http_client):
     assert data["mailer"] == settings.MAILER_PATH
 
 
+@with_environ_var("SMTP_HOST", "")
+def test_post_without_smtp_host_defined_returns_503(test_http_client):
+    with pytest.raises(webtest.app.AppError):
+        test_http_client.post(
+            "/mail", {"email": "me@example.com", "subscribe_me": True}
+        )
+
+
 def test_post_urlencode_mail_app(smtpd: SMTPServerFixture, test_http_client):
     response = test_http_client.post(
         "/mail", {"email": "me@example.com", "subscribe_me": True}

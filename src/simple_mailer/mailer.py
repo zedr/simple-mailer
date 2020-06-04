@@ -5,6 +5,9 @@ from typing import Optional
 
 from simple_mailer import exceptions
 from simple_mailer.config import settings
+from simple_mailer.utils import get_logger
+
+log = get_logger(__name__)
 
 
 class NotConnectedError(Exception):
@@ -21,13 +24,21 @@ class Mailer:
         use_tls: securely connect using TLS
     """
 
-    host: str = "localhost"
+    host: str = ""
     port: int = 465
     use_tls: bool = True
     _conn: smtplib.SMTP = Optional[None]
 
     def connect(self) -> "Mailer":
         """Connect to the remote server"""
+        if self.host == "":
+            err = "SMTP configuration incomplete: missing value for host. "
+            log.error(err)
+            log.debug(
+                "Hint: use the SMTP_DEBUG environment variable."
+            )
+            raise exceptions.SmtpServerNotConfiguredError(err)
+
         if self.host and self.port > 0:
             try:
                 self._conn = smtplib.SMTP(
