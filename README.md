@@ -19,7 +19,7 @@ supported.
  - Easy to setup
 
 ## Installation
-### Shared Hosting
+### Generic Shared Hosting
 1. Install the package, e.g. using `pip install simple-mailer`
 2. Copy over the `wsgi/passenger_wsgi.py` to the appropriate folder and rename 
 accordingly
@@ -27,6 +27,10 @@ accordingly
 
 More information, including hosting provider specific instructions, can be
 found on the [Wiki](https://github.com/zedr/simple-mailer/wiki).
+
+### Namecheap
+
+See this [blog post](https://medium.com/@zedr/how-to-send-mail-on-namecheap-shared-hosting-826a37629641).
 
 ## Configuration
 
