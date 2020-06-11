@@ -41,3 +41,14 @@ def test_mail_subject_can_be_defined_using_template_tags(smtpd):
     dis.dispatch()
     body = smtpd.sent_mail[0].body.decode("utf8")
     assert "IP 4.4.4.4 sent a message: hello" in body
+
+
+@with_environ_var("REPLY_TO_FIELD", "email")
+def test_reply_to_can_be_defined(smtpd):
+    """An optional reply to field can be populated using a form field name"""
+    dis = Dispatcher(
+        data={"email": "me@example.com"}, metadata={"client_ip": "4.4.4.4"}
+    )
+    dis.dispatch()
+    body = smtpd.sent_mail[0].body.decode("utf8")
+    assert "Reply-to: me@example.com" in body

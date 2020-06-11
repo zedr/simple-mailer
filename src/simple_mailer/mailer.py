@@ -34,9 +34,7 @@ class Mailer:
         if self.host == "":
             err = "SMTP configuration incomplete: missing value for host. "
             log.error(err)
-            log.debug(
-                "Hint: use the SMTP_DEBUG environment variable."
-            )
+            log.debug("Hint: use the SMTP_DEBUG environment variable.")
             raise exceptions.SmtpServerNotConfiguredError(err)
 
         if self.host and self.port > 0:
@@ -44,7 +42,7 @@ class Mailer:
                 self._conn = smtplib.SMTP(
                     host=self.host,
                     port=self.port,
-                    timeout=settings.SMTP_TIMEOUT
+                    timeout=settings.SMTP_TIMEOUT,
                 )
             except ConnectionRefusedError as exc:
                 raise exceptions.MailServerError(
@@ -73,7 +71,9 @@ class Mailer:
             self._conn.login(userid, passwd)
             return self
 
-    def send_message(self, from_="", to="", subject="", body="") -> "Mailer":
+    def send_message(
+        self, from_="", to="", reply_to="", subject="", body=""
+    ) -> "Mailer":
         """Send an email message
 
         Parameters:
@@ -86,6 +86,8 @@ class Mailer:
         msg["Subject"] = subject
         msg["From"] = from_
         msg["To"] = to
+        if reply_to:
+            msg["Reply-to"] = reply_to
         msg.set_content(body)
         self._conn.send_message(msg)
         return self

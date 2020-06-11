@@ -72,9 +72,10 @@ class _ConfigurationSettings:
         SMTP_TIMEOUT: int = 5
         TO_ADDRESS: str = ""
         FROM_ADDRESS: str = ""
+        REPLY_TO_FIELD: str = ""
         MAIL_SUBJECT: str = ""
         MAIL_TEMPLATE_PATH = (
-                Path(__file__).parent / "templates" / "default.txt"
+            Path(__file__).parent / "templates" / "default.txt"
         )
         MAILER_PATH: str = "/mail"
         USE_TLS: BoolStr = BoolStr(True)
@@ -137,8 +138,8 @@ class _ConfigurationSettings:
         if "{{" in redirect_url:
             tmpl = Template(redirect_url)
             return tmpl.render(
-                ORIGIN=request.headers.get('ORIGIN', '{{ ORIGIN }}'),
-                REFERER=request.headers.get('REFERER', '{{ REFERER }}')
+                ORIGIN=request.headers.get("ORIGIN", "{{ ORIGIN }}"),
+                REFERER=request.headers.get("REFERER", "{{ REFERER }}"),
             )
         else:
             return redirect_url

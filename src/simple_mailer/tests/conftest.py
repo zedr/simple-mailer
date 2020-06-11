@@ -101,7 +101,7 @@ def mocked_https_client(request):
                     "method": method,
                     "path": path,
                     "params": params,
-                    "headers": headers
+                    "headers": headers,
                 }
             )
 

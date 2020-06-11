@@ -96,7 +96,7 @@ class Recaptchav3Client(CaptchaClient):
             )
         except ConnectionRefusedError as exc:
             raise exceptions.CaptchaServerConnectionRefused(
-                f'Could not connect to the Captcha server '
+                f"Could not connect to the Captcha server "
                 f'at "{self.location.path}", reason: {exc}'
             )
         http_response = conn.getresponse()
@@ -107,11 +107,9 @@ class Recaptchav3Client(CaptchaClient):
                 log.debug(f"Captcha response was validated successfully.")
                 return None
             else:
-                err = (
-                    f"Captcha response failed validation"
-                )
+                err = f"Captcha response failed validation"
                 log.debug(err)
-                log.debug(f'Got this data from server: {data}')
+                log.debug(f"Got this data from server: {data}")
                 log.warning("Client failed captcha verification.")
                 raise exceptions.InvalidCaptchaResponse(err)
         err = (

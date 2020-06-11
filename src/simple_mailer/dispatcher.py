@@ -99,10 +99,7 @@ class Dispatcher:
                 with open(tmpl_path) as fd:
                     tmpl = Template(fd.read())
                     try:
-                        return tmpl.render(
-                            data=data,
-                            metadata=self.metadata
-                        )
+                        return tmpl.render(data=data, metadata=self.metadata)
                     except UndefinedError as exc:
                         raise TemplateError(
                             f"The template did not define the required fields:"
@@ -140,6 +137,7 @@ class Dispatcher:
         cfg = {
             "from_": settings.FROM_ADDRESS,
             "to": settings.TO_ADDRESS,
+            "reply_to": self.get_reply_to() or settings.FROM_ADDRESS,
             "subject": self.get_subject(),
             "body": self._get_templated_body(),
         }
@@ -147,6 +145,22 @@ class Dispatcher:
         log.info(
             f"Sent email to server {settings.SMTP_HOST}:{settings.SMTP_PORT}"
         )
+
+    def get_reply_to(self) -> str:
+        """Get the reply-to address if it has been defined.
+
+        If it hasn't been defined, just use the From: address"""
+        reply_to_field = settings.REPLY_TO_FIELD
+        if reply_to_field:
+            try:
+                address = self.data[reply_to_field]
+            except KeyError:
+                pass
+            else:
+                log.debug(f"Setting Reply-to field to: {address}")
+                return address
+
+        return ""
 
     def get_subject(self) -> str:
         """Get the subject for the current email"""

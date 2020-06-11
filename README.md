@@ -89,6 +89,14 @@ be sent.
 
 Example: `mailer@example.com`
 
+### REPLY_TO_FIELD
+
+The form field that will be used to populate the Reply-to field of the email.
+
+Default: An empty string
+
+Example: `email`
+
 #### MAIL_SUBJECT
 
 The subject of every sent email.
