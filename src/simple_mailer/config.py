@@ -13,7 +13,7 @@ _supported_log_level_names = ("DEBUG", "INFO", "WARN", "ERROR", "CRITICAL")
 
 
 class BoolStr:
-    """A factory class that can construct booleans from strings"""
+    """A factory class that can construct booleans from strings."""
 
     def __new__(cls, value, *args, **kwargs):
         if hasattr(value, "lower"):
@@ -23,6 +23,8 @@ class BoolStr:
 
 
 class TupleStr:
+    """A factory class that can construct tuples from strings."""
+
     sep = ","
 
     def __new__(cls, value, *args, **kwargs):
@@ -63,7 +65,8 @@ class _ConfigurationSettings:
         If not specified, the default type will be str.
 
         Only certain types are supported, e.g. str, float, bool, etc.
-        See the metaclass for more information."""
+        See the metaclass for more information.
+        """
 
         SMTP_HOST: str = ""
         SMTP_PORT: int = 465
@@ -90,6 +93,7 @@ class _ConfigurationSettings:
         LOG_LEVEL: str = "WARN"
 
     def _get(self, name: str) -> Any:
+        """Get the value as defined by an environment variable or a default."""
         try:
             val = os.environ.get(name, getattr(self.Defaults, name))
         except AttributeError:
@@ -113,7 +117,7 @@ class _ConfigurationSettings:
 
     @property
     def CAPTCHA_VERIFY_LOCATION(self) -> Optional[Location]:
-        """The location of the captcha verification site"""
+        """The location of the captcha verification site."""
         overridden_url = self.CAPTCHA_VERIFY_URL
         if overridden_url:
             parsed = urlparse(overridden_url)
@@ -130,9 +134,9 @@ class _ConfigurationSettings:
 
     @property
     def REDIRECT_URL(self) -> str:
-        """The URL where the client will be redirected
+        """The URL where the client will be redirected.
 
-        Can also be one of the following template tags: REFERER, ORIGIN
+        Can also be one of the following template tags: REFERER, ORIGIN.
         """
         redirect_url = self._get("REDIRECT_URL")
         if "{{" in redirect_url:
@@ -146,7 +150,7 @@ class _ConfigurationSettings:
 
     @classmethod
     def get_defaults(cls) -> Dict:
-        """List the supported variable names"""
+        """List the supported variable names."""
         ns = cls.Defaults.__dict__
         return {k: v for k, v in ns.items() if not k.startswith("__")}
 

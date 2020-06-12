@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Location:
+    """A URL."""
+
     hostname: str
     path: str
 

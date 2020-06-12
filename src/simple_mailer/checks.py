@@ -11,7 +11,7 @@ except ImportError:
 
 
 def get_version() -> str:
-    """Get the version designation for this software distribution"""
+    """Get the version designation for this software distribution."""
     if pkg_resources:
         return pkg_resources.get_distribution("simple_mailer").version
     else:
@@ -19,13 +19,13 @@ def get_version() -> str:
 
 
 def get_env_variables() -> Dict[str, Any]:
-    """Get all the related environment variables and their values"""
+    """Get all the related environment variables and their values."""
     keys = settings.get_defaults().keys()
     return {key: settings[key] for key in keys}
 
 
 def get_smtp_connection() -> Dict[str, str]:
-    """Get information about the smtpd connection"""
+    """Get information about the smtpd connection."""
     try:
         Dispatcher().get_server().connect().disconnect()
     except (BaseSimpleMailerException, OSError) as exc:

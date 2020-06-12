@@ -11,12 +11,12 @@ log = get_logger(__name__)
 
 
 class NotConnectedError(Exception):
-    """Not connected to the intended mail server"""
+    """Not connected to the intended mail server."""
 
 
 @dataclass
 class Mailer:
-    """An simple email client
+    """An simple email client.
 
     Attributes:
         host: the hostname of the server
@@ -59,7 +59,7 @@ class Mailer:
             )
 
     def login(self, userid: str, passwd: str) -> "Mailer":
-        """Login to the remote server
+        """Login to the remote server.
 
         Parameters:
             userid: the user id of the client
@@ -74,7 +74,7 @@ class Mailer:
     def send_message(
         self, from_="", to="", reply_to="", subject="", body=""
     ) -> "Mailer":
-        """Send an email message
+        """Send an email message.
 
         Parameters:
             from_: the sender email address
@@ -93,6 +93,6 @@ class Mailer:
         return self
 
     def disconnect(self) -> "Mailer":
-        """Disconnect from the remote server"""
+        """Disconnect from the remote server."""
         self._conn.close()
         return self

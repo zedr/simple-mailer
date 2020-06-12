@@ -12,7 +12,7 @@ log = get_logger(__name__)
 
 @post(settings.MAILER_PATH)
 def mail() -> str:
-    """A resource that can send mail"""
+    """A resource that can send mail."""
     log.info(f"Got a new submission from client with IP {request.remote_addr}")
     try:
         Dispatcher().parse_request(request).dispatch()
@@ -37,6 +37,7 @@ def mail() -> str:
 
 @get(settings.DEBUG_PATH)
 def debug() -> str:
+    """The debug resource."""
     ns = {}
     if settings.ENABLE_DEBUG:
         ns.update(
@@ -54,7 +55,7 @@ def debug() -> str:
 
 @get("/")
 def root() -> str:
-    """The root resource"""
+    """The root resource."""
     ns = {"mailer": settings.MAILER_PATH}
     if settings.ENABLE_DEBUG:
         ns["debug"] = settings.DEBUG_PATH
@@ -62,15 +63,17 @@ def root() -> str:
 
 
 def get_application() -> AppStack:
-    """Get the default Bottle application"""
+    """Get the default Bottle application."""
     return default_app()
 
 
 def run_application() -> None:
+    """Run the default Bottle application."""
     run(host="localhost", port=8080)
 
 
 def main() -> None:
+    """Run the main."""
     import argparse
 
     parser = argparse.ArgumentParser()

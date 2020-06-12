@@ -14,7 +14,7 @@ log = get_logger(__name__)
 
 
 class Dispatcher:
-    """A controller that processes incoming HTTP requests and sends mail"""
+    """A controller that processes incoming HTTP requests and sends mail."""
 
     data: dict
     metadata: dict
@@ -51,7 +51,7 @@ class Dispatcher:
         return self
 
     def parse_request(self, request: bottle.Request) -> "Dispatcher":
-        """Extract and store the payload of a given HTTP request"""
+        """Extract and store the payload of a given HTTP request."""
         env = request.environ
         content_type = env["CONTENT_TYPE"]
         client_ip = env.get("HTTP_X_FORWARDED_FOR", env.get("REMOTE_ADDR", ""))
@@ -86,7 +86,7 @@ class Dispatcher:
         return self
 
     def _get_templated_body(self) -> str:
-        """Assemble and return the body of the message using the template
+        """Assemble and return the body of the message using the template.
 
         Any captcha data is automatically removed, if present.
         """
@@ -116,7 +116,7 @@ class Dispatcher:
             return json.dumps(self.data)
 
     def get_server(self) -> Mailer:
-        """Get an instance of the mailer server"""
+        """Get an instance of the mailer server."""
         return Mailer(
             host=settings.SMTP_HOST,
             port=settings.SMTP_PORT,
@@ -124,7 +124,7 @@ class Dispatcher:
         )
 
     def dispatch(self) -> None:
-        """Dispatch a given HTTP request
+        """Dispatch a given HTTP request.
 
         Returns true or false depending on the outcome.
         """
@@ -149,7 +149,7 @@ class Dispatcher:
     def get_reply_to(self) -> str:
         """Get the reply-to address if it has been defined.
 
-        If it hasn't been defined, just use the From: address"""
+        If it hasn't been defined, just use the From: address."""
         reply_to_field = settings.REPLY_TO_FIELD
         if reply_to_field:
             try:
@@ -163,7 +163,7 @@ class Dispatcher:
         return ""
 
     def get_subject(self) -> str:
-        """Get the subject for the current email"""
+        """Get the subject for the current email."""
         subject = settings.MAIL_SUBJECT
         if subject:
             tmpl = Template(subject)

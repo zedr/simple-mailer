@@ -14,8 +14,7 @@ log = get_logger(__name__)
 
 @dataclass
 class CaptchaClient:
-    """An generic object that verifies a given captcha response
-    """
+    """An generic object that verifies a given captcha response."""
 
     protocol_name: str = "noop"
     key: str = ""
@@ -68,7 +67,7 @@ class CaptchaClient:
 
 @dataclass
 class Recaptchav3Client(CaptchaClient):
-    """A Recaptchav3 client"""
+    """A Recaptchav3 client."""
 
     protocol_name: str = "recaptchav3"
     key: str = "g-recaptcha-response"
