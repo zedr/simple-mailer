@@ -12,6 +12,7 @@ from webtest import TestApp
 
 @pytest.fixture(scope="session")
 def smtpd(request):
+    """Define a mock SMTPD and set the appropriate env variables."""
     fixture = SMTPServerFixture()
     os.environ.setdefault("SMTP_HOST", "localhost")
     os.environ.setdefault("SMTP_PORT", str(fixture.port))
@@ -25,6 +26,7 @@ def smtpd(request):
 
 @pytest.fixture
 def test_http_client():
+    """Create a mock HTTP client for testing."""
     return TestApp(get_application())
 
 
