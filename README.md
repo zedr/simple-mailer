@@ -91,7 +91,7 @@ be sent.
 
 Example: `mailer@example.com`
 
-### REPLY_TO_FIELD
+#### REPLY_TO_FIELD
 
 The form field that will be used to populate the Reply-to field of the email.
 
