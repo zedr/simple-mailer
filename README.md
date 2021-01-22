@@ -11,6 +11,8 @@ This program provides a web resource that can be used by an HTML web form
 to send a plain text email to a specific email address. HTML mail are not
 supported.
 
+Python version: 3.7+
+
 ### Features:
  - Can be triggered by a WSGI call or run standalone as a daemon
  - Configurable using environment variables
