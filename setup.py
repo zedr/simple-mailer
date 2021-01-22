@@ -20,7 +20,7 @@ setup(
     url='https://github.com/zedr/simple-mailer',
     install_requires=[
         'bottle==0.12.18',
-        'lxml==4.5.0',
+        'lxml==4.6.2',
         'jinja2==2.11.2'
     ],
     package_dir={'': 'src'},
