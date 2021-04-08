@@ -6,7 +6,7 @@ authors = ["Rigel Di Scala <zedr@zedr.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-bottle = "^0.12.18"
+bottle = "^0.12.19"
 lxml = "^4.6.2"
 jinja2 = "^2.11.2"
 
